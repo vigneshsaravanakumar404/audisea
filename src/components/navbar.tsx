@@ -3,7 +3,7 @@ import logo from "../../public/logo.png";
 
 export default function Navbar() {
   return (
-    <nav className="w-full flex justify-between items-center p-6 pt-10 bg-[#FBF8F6] border-b border-[#d6d6d6] shadow-sm">
+    <nav className="w-full flex justify-between items-center p-6 pt-10 bg-[#FBF8F6] border-b-2 border-[#d6d6d6] shadow-sm">
       <Link href="/">
         <div className="flex items-center w-7 cursor-pointer ml-2">
           <img src={logo.src} className="ml-auto mr-auto" alt="Logo" />

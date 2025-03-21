@@ -36,7 +36,6 @@ function Hero() {
   );
 }
 
-
 function Offerings() {
   return (
     <div className="w-[1512px] h-[930px] relative overflow-hidden">
@@ -79,14 +78,14 @@ function Testimonials() {
       <div data-size="48" className="size-12 left-[61px] top-[310px] absolute overflow-hidden">
         <div data-svg-wrapper className="left-[4px] top-[4px] absolute">
           <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M22 14L14 22M14 22L22 30M14 22H30M42 22C42 33.0457 33.0457 42 22 42C10.9543 42 2 33.0457 2 22C2 10.9543 10.9543 2 22 2C33.0457 2 42 10.9543 42 22Z" stroke="#1E1E1E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M22 14L14 22M14 22L22 30M14 22H30M42 22C42 33.0457 33.0457 42 22 42C10.9543 42 2 33.0457 2 22C2 10.9543 10.9543 2 22 2C33.0457 2 42 10.9543 42 22Z" stroke="#1E1E1E" strokeWidth="4" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </div>
       </div>
       <div data-size="48" className="size-12 left-[1369px] top-[310px] absolute overflow-hidden">
         <div data-svg-wrapper className="left-[4px] top-[4px] absolute">
           <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M22 30L30 22M30 22L22 14M30 22H14M42 22C42 33.0457 33.0457 42 22 42C10.9543 42 2 33.0457 2 22C2 10.9543 10.9543 2 22 2C33.0457 2 42 10.9543 42 22Z" stroke="#1E1E1E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M22 30L30 22M30 22L22 14M30 22H14M42 22C42 33.0457 33.0457 42 22 42C10.9543 42 2 33.0457 2 22C2 10.9543 10.9543 2 22 2C33.0457 2 42 10.9543 42 22Z" stroke="#1E1E1E" strokeWidth="4" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </div>
       </div>
@@ -320,4 +319,3 @@ function Contact() {
   </div>
   );
 }
-
