@@ -1,5 +1,6 @@
 import Image from "next/image";
 import home from "../../public/home.svg";
+import OfferingCard from "@/components/OfferingCard";
 
 export default function Home() {
   return (
@@ -38,31 +39,14 @@ function Hero() {
 
 function Offerings() {
   return (
-    <div className="w-[1512px] h-[930px] relative overflow-hidden">
-      <div className="w-[1512px] h-[930px] left-0 top-0 absolute bg-[#fbf8f6]"></div>
-      <div className="w-[994px] h-[83px] left-[107px] top-[203px] absolute justify-start text-[#494a4a] text-4xl font-normal font-['Josefin_Sans']">We offer all kinds of test preparation.</div>
-      <div className="w-[62px] h-[67px] left-[808px] top-[140px] absolute bg-[#96aa97]/30 rounded-full"></div>
-      <div className="size-[34px] left-[718px] top-[125px] absolute bg-[#96aa97]/30 rounded-full"></div>
-      <div className="w-[489px] h-[506px] left-[175px] top-[73px] absolute bg-[#96aa97]/30 rounded-full"></div>
-      <div className="w-[690px] h-[121px] left-[-296px] top-[82px] absolute text-right justify-center text-[#494a4a] text-[64px] font-bold font-['Josefin_Sans']">Offerings</div>
-      <div className="w-[412px] h-[496px] left-[101px] top-[285px] absolute bg-[#d9d9d9] rounded-lg"></div>
-      <div className="w-[412px] h-[496px] left-[546px] top-[286px] absolute bg-[#d9d9d9] rounded-lg"></div>
-      <div className="w-[412px] h-[496px] left-[994px] top-[285px] absolute bg-[#d9d9d9] rounded-lg"></div>
-      <div className="w-[307px] h-[42px] left-[154px] top-[347px] absolute text-center justify-center text-[#494a4a] text-4xl font-bold font-['Josefin_Sans']">SAT Prep</div>
-      <div className="w-[202px] h-[42px] left-[655px] top-[347px] absolute text-center justify-center text-[#494a4a] text-4xl font-bold font-['Josefin_Sans']">ACT Prep</div>
-      <div className="w-80 h-[42px] left-[1049px] top-[347px] absolute text-center justify-center text-[#494a4a] text-4xl font-bold font-['Josefin_Sans']">Subject Tutoring</div>
-      <div data-size="Medium" data-state="Default" data-variant="Primary" className="w-[219px] h-12 p-3 left-[200px] top-[410px] absolute bg-Background-Brand-Default rounded-lg outline outline-1 outline-offset-[-1px] outline-Border-Brand-Default inline-flex justify-center items-center gap-2 overflow-hidden">
-        <div className="justify-start text-Text-Brand-On-Brand text-base font-normal font-['Inter'] leading-none">Next Test on 5/15/25</div>
+    <div className="w-screen bg-[url('/../../offeringBg.svg')] p-20">
+      <h1 className="text-[#494a4a] font-bold font-['Josefin_Sans'] text-[64px] mb-[10px]">Offerings</h1>
+      <h3 className="text-[#494a4a]  font-['Josefin_Sans'] text-[24px] mb-[40px]">We offer all kinds of test preparation. You can be sure that we can make your child succeed.</h3>
+      <div className = "w-full flex flex-wrap justify-between gap-4">
+        <OfferingCard></OfferingCard>
+        <OfferingCard></OfferingCard>
+        <OfferingCard></OfferingCard>
       </div>
-      <div data-size="Medium" data-state="Default" data-variant="Primary" className="w-[219px] h-12 p-3 left-[646px] top-[410px] absolute bg-Background-Brand-Default rounded-lg outline outline-1 outline-offset-[-1px] outline-Border-Brand-Default inline-flex justify-center items-center gap-2 overflow-hidden">
-        <div className="justify-start text-Text-Brand-On-Brand text-base font-normal font-['Inter'] leading-none">Next Test on 5/15/25</div>
-      </div>
-      <div data-size="Medium" data-state="Default" data-variant="Primary" className="w-[219px] h-12 p-3 left-[1090px] top-[410px] absolute bg-Background-Brand-Default rounded-lg outline outline-1 outline-offset-[-1px] outline-Border-Brand-Default inline-flex justify-center items-center gap-2 overflow-hidden">
-        <div className="justify-start text-Text-Brand-On-Brand text-base font-normal font-['Inter'] leading-none">Math, Science, etc!</div>
-      </div>
-      <div className="w-[302px] h-[232px] left-[159px] top-[493px] absolute justify-center text-[#494a4a] text-2xl font-normal font-['Josefin_Sans']">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
-      <div className="w-[302px] h-[232px] left-[608px] top-[493px] absolute justify-center text-[#494a4a] text-2xl font-normal font-['Josefin_Sans']">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
-      <div className="w-[302px] h-[232px] left-[1050px] top-[493px] absolute justify-center text-[#494a4a] text-2xl font-normal font-['Josefin_Sans']">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
     </div>
   );
 }
