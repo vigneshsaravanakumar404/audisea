@@ -1,11 +1,17 @@
+"use client";
 import Image from "next/image";
 import home from "../../public/home.svg";
+import { useState, useEffect } from "react";
+import { testimonials, offerings } from "@/data/constants";
 import OfferingCard from "@/components/OfferingCard";
+
+
 
 export default function Home() {
   return (
     <div>
       <Hero />
+      <WhyUs />
       <Offerings />
       <Testimonials />
       <Contact />
@@ -13,14 +19,13 @@ export default function Home() {
   );
 }
 
-
 function Hero() {
   return (
     <div className="w-screen h-screen flex flex-col bg-[#FBF8F6] overflow-hidden">
-
+      <div className="mt-10"></div>
       <main className="flex flex-col items-center justify-center flex-1 p-6 md:flex-row md:items-center md:justify-center">
         <div className="relative w-full md:w-auto">
-          <Image src={home} alt="home1" className="w-full h-auto md:w-200 md:h-200" />
+          <Image src={home} alt="home1" className="w-full h-auto md:w-150 md:h-150" />
         </div>
         <div className="text-center mt-6 md:mt-0 md:text-right md:ml-16">
           <h1 className="text-[#96aa97] text-4xl md:text-6xl lg:text-9xl font-bold font-['Josefin_Sans']">Audisea</h1>
@@ -32,83 +37,126 @@ function Hero() {
           </button>
         </div>
       </main>
-      <div className="h-20"></div>
+    </div>
+  );
+}
+
+function WhyUs() {
+  return (
+    <div className="w-[1512px] h-[569px] relative overflow-hidden">
+      <div className="w-[1512px] h-[571px] left-0 top-0 absolute bg-[#96aa97]"></div>
+      <div className="w-[262px] h-9 left-[105px] top-[482px] absolute text-center justify-start text-white text-4xl font-bold font-['Josefin_Sans']">Personalized</div>
+      <div className="w-[262px] h-9 left-[604px] top-[482px] absolute text-center justify-start text-white text-4xl font-bold font-['Josefin_Sans']">Personalized</div>
+      <div className="w-[262px] h-9 left-[1091px] top-[482px] absolute text-center justify-start text-white text-4xl font-bold font-['Josefin_Sans']">Personalized</div>
+      <div className="w-[690px] h-[121px] left-[101px] top-[46px] absolute justify-center text-white text-[64px] font-bold font-['Josefin_Sans']">Why Audisea?</div>
+      <div className="w-[690px] h-[121px] left-[101px] top-[46px] absolute justify-center text-white text-[64px] font-bold font-['Josefin_Sans']">Why Audisea?</div>
+      <div className="size-[271px] left-[101px] top-[177px] absolute bg-[#fbf8f6] rounded-full"></div>
+      <div className="size-[271px] left-[599px] top-[177px] absolute bg-[#fbf8f6] rounded-full"></div>
+      <div className="size-[271px] left-[1097px] top-[177px] absolute bg-[#fbf8f6] rounded-full"></div>
+      {/* ADD IMAGES */}
     </div>
   );
 }
 
 function Offerings() {
   return (
-    <div className="w-screen bg-[url('/../../offeringBg.svg')] p-20">
-      <h1 className="text-[#494a4a] font-bold font-['Josefin_Sans'] text-[64px] mb-[10px]">Offerings</h1>
-      <h3 className="text-[#494a4a]  font-['Josefin_Sans'] text-[24px] mb-[40px]">We offer all kinds of test preparation. You can be sure that we can make your child succeed.</h3>
-      <div className = "w-full flex flex-wrap justify-between gap-4">
-        <OfferingCard></OfferingCard>
-        <OfferingCard></OfferingCard>
-        <OfferingCard></OfferingCard>
+    <div className="w-screen bg-[url('/../../offeringBg.svg')] p-10 sm:p-20">
+      <h1 className="text-[#494a4a] font-bold font-['Josefin_Sans'] text-[60px] mb-[10px] text-center sm:text-left">Offerings</h1>
+      <h3 className="text-[#494a4a] font-['Josefin_Sans'] text-[24px] mb-[40px] text-center sm:text-left">
+        We offer all kinds of test preparation. You can be sure that we can make your child succeed.
+      </h3>
+      <div className="w-full flex flex-wrap justify-center gap-5 sm:gap-10">
+        {offerings.map((offering, index) => (
+          <OfferingCard
+            key={index}
+            title={offering.title}
+            buttonText={offering.buttonText}
+            description={offering.description}
+          />
+        ))}
       </div>
     </div>
   );
 }
 
+
+
 function Testimonials() {
+  const [index, setIndex] = useState(0);
+
+
+  useEffect(() => {
+    const handleResize = () => {
+      setVisibleCount(getVisibleCount());
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const getVisibleCount = () => {
+    if (window.innerWidth >= 1024) return 5; // xl and above
+    if (window.innerWidth >= 768) return 4; // lg
+    if (window.innerWidth >= 640) return 3; // md
+    if (window.innerWidth >= 400) return 2; // sm
+    return 1; // xs
+  };
+
+  const [visibleCount, setVisibleCount] = useState(getVisibleCount());
+
+
+
+
+  const prevTestimonial = () => {
+    setIndex((prev) => (prev === 0 ? testimonials.length - visibleCount : prev - visibleCount));
+  };
+
+  const nextTestimonial = () => {
+    setIndex((prev) => (prev + visibleCount >= testimonials.length ? 0 : prev + visibleCount));
+  };
+
   return (
-    <div className="w-[1512px] h-[571px] relative overflow-hidden">
-      <div className="w-[1512px] h-[571px] left-0 top-0 absolute bg-[#96aa97]"></div>
-      <div className="w-[796px] h-[116px] left-[61px] top-[52px] absolute text-center justify-center text-white text-[64px] font-bold font-['Josefin_Sans']"><br />Don’t just take it from us!</div>
-      <div className="w-[233px] h-[245px] left-[1136px] top-[88px] absolute bg-white/10 rounded-full"></div>
-      <div className="w-16 h-[68px] left-[1058px] top-[85px] absolute bg-white/10 rounded-full"></div>
-      <div className="w-[25px] h-[26px] left-[1024px] top-[158px] absolute bg-white/10 rounded-full"></div>
-      <div data-size="48" className="size-12 left-[61px] top-[310px] absolute overflow-hidden">
-        <div data-svg-wrapper className="left-[4px] top-[4px] absolute">
-          <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M22 14L14 22M14 22L22 30M14 22H30M42 22C42 33.0457 33.0457 42 22 42C10.9543 42 2 33.0457 2 22C2 10.9543 10.9543 2 22 2C33.0457 2 42 10.9543 42 22Z" stroke="#1E1E1E" strokeWidth="4" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </div>
-      </div>
-      <div data-size="48" className="size-12 left-[1369px] top-[310px] absolute overflow-hidden">
-        <div data-svg-wrapper className="left-[4px] top-[4px] absolute">
-          <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M22 30L30 22M30 22L22 14M30 22H14M42 22C42 33.0457 33.0457 42 22 42C10.9543 42 2 33.0457 2 22C2 10.9543 10.9543 2 22 2C33.0457 2 42 10.9543 42 22Z" stroke="#1E1E1E" strokeWidth="4" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </div>
-      </div>
-      <div className="w-[340px] h-[227px] min-w-60 p-6 left-[143px] top-[220px] absolute bg-Background-Default-Default rounded-lg outline outline-1 outline-offset-[-1px] outline-Border-Default-Default inline-flex flex-col justify-start items-start gap-6">
-        <div className="self-stretch inline-flex justify-start items-start">
-          <div className="flex-1 justify-start text-Text-Neutral-Default text-2xl font-semibold font-['Inter'] leading-[28.80px]">“I really love this tutoring place. The tutors are extraordinary and explain the concepts perfectly. ”</div>
-        </div>
-        <div className="w-[139px] inline-flex justify-start items-start gap-3">
-          <div className="flex-1 inline-flex flex-col justify-start items-start gap-0.5">
-            <div className="self-stretch justify-center text-Text-Default-Secondary text-base font-semibold font-['Inter'] leading-snug">Bob R.</div>
-            <div className="self-stretch justify-center text-Text-Default-Tertiary text-base font-normal font-['Inter'] leading-snug">Parent</div>
+    <div className="w-full bg-[#96aa97] py-16 px-6 flex flex-col items-center">
+      <h2 className="text-white text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-10">
+        Don’t just take it from us!
+      </h2>
+
+      <div className="relative w-full max-w-7xl overflow-hidden">
+        <div className="flex items-center justify-center flex-col sm:flex-row">
+          {/* Left Button (Moves Below on XS) */}
+          <button onClick={prevTestimonial} className="sm:mr-8 mb-4 sm:mb-0 p-3 bg-white rounded-full shadow-lg hover:bg-gray-200 z-10">
+            <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22 14L14 22M14 22L22 30M14 22H30M42 22C42 33.0457 33.0457 42 22 42C10.9543 42 2 33.0457 2 22C2 10.9543 2 2 22 2C33.0457 2 42 10.9543 42 22Z" stroke="#1E1E1E" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+
+          {/* Carousel */}
+          <div className="relative w-full max-w-7xl flex justify-center overflow-hidden">
+            <div className="flex space-x-6">
+              {testimonials.slice(index, index + visibleCount).map((testimonial, idx) => (
+                <div key={idx} className="w-full sm:w-[280px] md:w-[340px] p-6 bg-white rounded-lg shadow-md">
+                  <p className="text-gray-800 text-lg font-semibold mb-4">“{testimonial.quote}”</p>
+                  <div className="text-gray-600 font-semibold">{testimonial.name}</div>
+                  <div className="text-gray-500 text-sm">{testimonial.role}</div>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </div>
-      <div className="w-[340px] h-[227px] min-w-60 p-6 left-[569px] top-[220px] absolute bg-Background-Default-Default rounded-lg outline outline-1 outline-offset-[-1px] outline-Border-Default-Default inline-flex flex-col justify-start items-start gap-6">
-        <div className="self-stretch inline-flex justify-start items-start">
-          <div className="flex-1 justify-start text-Text-Neutral-Default text-2xl font-semibold font-['Inter'] leading-[28.80px]">“I really love this tutoring place. The tutors are extraordinary and explain the concepts perfectly. ”</div>
-        </div>
-        <div className="w-[139px] inline-flex justify-start items-start gap-3">
-          <div className="flex-1 inline-flex flex-col justify-start items-start gap-0.5">
-            <div className="self-stretch justify-center text-Text-Default-Secondary text-base font-semibold font-['Inter'] leading-snug">Bob R.</div>
-            <div className="self-stretch justify-center text-Text-Default-Tertiary text-base font-normal font-['Inter'] leading-snug">Parent</div>
-          </div>
-        </div>
-      </div>
-      <div className="w-[340px] h-[227px] min-w-60 p-6 left-[994px] top-[220px] absolute bg-Background-Default-Default rounded-lg outline outline-1 outline-offset-[-1px] outline-Border-Default-Default inline-flex flex-col justify-start items-start gap-6">
-        <div className="self-stretch inline-flex justify-start items-start">
-          <div className="flex-1 justify-start text-Text-Neutral-Default text-2xl font-semibold font-['Inter'] leading-[28.80px]">“I really love this tutoring place. The tutors are extraordinary and explain the concepts perfectly. ”</div>
-        </div>
-        <div className="w-[139px] inline-flex justify-start items-start gap-3">
-          <div className="flex-1 inline-flex flex-col justify-start items-start gap-0.5">
-            <div className="self-stretch justify-center text-Text-Default-Secondary text-base font-semibold font-['Inter'] leading-snug">Bob R.</div>
-            <div className="self-stretch justify-center text-Text-Default-Tertiary text-base font-normal font-['Inter'] leading-snug">Parent</div>
-          </div>
+
+          {/* Right Button */}
+          <button onClick={nextTestimonial} className="sm:ml-8 mt-4 sm:mt-0 p-3 bg-white rounded-full shadow-lg hover:bg-gray-200 z-10">
+            <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22 30L30 22M30 22L22 14M30 22H14M42 22C42 33.0457 33.0457 42 22 42C10.9543 42 2 33.0457 2 22C2 10.9543 2 2 22 2C33.0457 2 42 10.9543 42 22Z" stroke="#1E1E1E" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
   );
 }
+
 
 function Contact() {
   return (<div className="w-[1512px] h-[946px] relative overflow-hidden">
