@@ -55,17 +55,17 @@ export const offerings = [
     {
         title: "SAT Prep",
         buttonText: getClosestDate(satTestDates),
-        description: "Prepare for the SAT with our expert tutors. We offer personalized study plans and practice tests to help you ace the exam.",
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     },
     {
         title: "ACT Prep",
         buttonText: getClosestDate(actTestDates),
-        description: "Get ready for the ACT with our experienced tutors. We provide comprehensive study materials and practice tests to help you succeed.",
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     },
     {
         title: "AP Exam Prep",
         buttonText: getClosestDate(apTestDates),
-        description: "Prepare for your AP exams with our knowledgeable tutors. We offer study resources and practice tests to help you get a 5.",
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     }
 ];
 
