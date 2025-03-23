@@ -240,7 +240,7 @@ function Contact() {
         <div className="text-center sm:text-left text-[#494a4a] text-4xl sm:text-5xl lg:text-6xl font-bold font-['Josefin_Sans'] mb-8 sm:mb-0">
           Want to learn more?
           <div className="mt-4">
-            <button className="bg-[#2C2C2C] text-white text-lg sm:text-xl px-6 py-3 rounded-lg hover:bg-[#7f947f] transition">
+            <button className="bg-[#2C2C2C] text-white text-lg sm:text-xl px-6 py-3 rounded-lg transition border-2 border-transparent hover:bg-white hover:text-[#2C2C2C] hover:border-[#2C2C2C]">
               Contact Us
             </button>
           </div>
