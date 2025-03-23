@@ -167,7 +167,7 @@ function Testimonials() {
           {/* Left Button (Moves Below on XS) */}
           <button
             onClick={prevTestimonial}
-            className="sm:mr-8 mb-4 sm:mb-0 p-3 bg-white rounded-full shadow-lg hover:bg-gray-200 z-10"
+            className="sm:mr-8 mb-4 sm:mb-0 p-3 bg-white rounded-full shadow-lg hover:bg-gray-200 z-[1]"
           >
             <svg
               width="44"
@@ -207,7 +207,7 @@ function Testimonials() {
           {/* Right Button */}
           <button
             onClick={nextTestimonial}
-            className="sm:ml-8 mt-4 sm:mt-0 p-3 bg-white rounded-full shadow-lg hover:bg-gray-200 z-10"
+            className="sm:ml-8 mt-4 sm:mt-0 p-3 bg-white rounded-full shadow-lg hover:bg-gray-200 z-0"
           >
             <svg
               width="44"
@@ -230,7 +230,6 @@ function Testimonials() {
     </div>
   );
 }
-
 
 
 function Contact() {
