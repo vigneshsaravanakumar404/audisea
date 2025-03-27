@@ -9,12 +9,7 @@ import phone from "../../../public/Phone.svg";
 import location from "../../../public/location_on.svg";
 import { subjectOptions } from "@/data/constants";
 
-
-//! implement email sending functionality
-//! implement form validation
-
 export default function Page() {
-
     const searchParams = useSearchParams();
     const search = searchParams.get('subject');
 
@@ -25,20 +20,39 @@ export default function Page() {
         subjects: search ? subjectOptions.flatMap(group => group.options).filter(option => search?.split(',').includes(option.value)) : []
     });
 
+    const [errors, setErrors] = useState({
+        name: "",
+        email: "",
+        message: ""
+    });
+
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubjectChange = (selectedOptions: any) => {
+    const handleSubjectChange = (selectedOptions) => {
         setForm({ ...form, subjects: selectedOptions });
     };
 
+    const validateForm = () => {
+        let newErrors = { name: "", email: "", message: "" };
+        if (!form.name) newErrors.name = "Name is required";
+        if (!form.email) newErrors.email = "Email is required";
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) newErrors.email = "Invalid email format";
+        if (!form.message) newErrors.message = "Message is required";
+        setErrors(newErrors);
+        return Object.values(newErrors).every(err => err === "");
+    };
 
-
+    const handleSubmit = () => {
+        if (validateForm()) {
+            window.location.href = "/contact";
+        }
+    };
 
     return (
         <div className="w-full max-w-[1512px] mx-auto h-auto bg-[#fbf8f6] p-4 flex flex-col items-center min-h-screen justify-center">
-            <div className="text-[#96aa97] text-5xl font-bold font-['Josefin_Sans'] text-left mt-4 my- w-full max-w-[1200px]">
+            <div className="text-[#96aa97] text-5xl font-bold font-['Josefin_Sans'] text-left mt-4 w-full max-w-[1200px]">
                 Contact
             </div>
             <div className="w-full max-w-[1200px] flex flex-col md:flex-row items-center gap-0 md:gap-8 text-[#494a4a] text-lg md:text-2xl font-['Josefin_Sans']">
@@ -56,22 +70,28 @@ export default function Page() {
                 </div>
             </div>
             <div className="w-full max-w-[1200px] flex flex-col md:flex-row gap-4 font-bold justify-center mt-6">
-                <input
-                    type="text"
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                    placeholder="Name"
-                    className="w-full md:w-1/2 h-[104px] bg-[#e7e5e3] rounded-[10px] p-4 text-[#494a4a] text-lg md:text-2xl font-['Josefin_Sans'] focus:outline-none"
-                />
-                <input
-                    type="email"
-                    name="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    placeholder="Email"
-                    className="w-full md:w-1/2 h-[104px] bg-[#e7e5e3] rounded-[10px] p-4 text-[#494a4a] text-lg md:text-2xl font-bold font-['Josefin_Sans'] focus:outline-none"
-                />
+                <div className="w-full md:w-1/2">
+                    <input
+                        type="text"
+                        name="name"
+                        value={form.name}
+                        onChange={handleChange}
+                        placeholder="Name"
+                        className="w-full h-[104px] bg-[#e7e5e3] rounded-[10px] p-4 text-[#494a4a] text-lg md:text-2xl font-['Josefin_Sans'] focus:outline-none"
+                    />
+                    {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+                </div>
+                <div className="w-full md:w-1/2">
+                    <input
+                        type="email"
+                        name="email"
+                        value={form.email}
+                        onChange={handleChange}
+                        placeholder="Email"
+                        className="w-full h-[104px] bg-[#e7e5e3] rounded-[10px] p-4 text-[#494a4a] text-lg md:text-2xl font-bold font-['Josefin_Sans'] focus:outline-none"
+                    />
+                    {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                </div>
             </div>
             <div className="w-full max-w-[1200px] mt-4">
                 <Select
@@ -92,58 +112,22 @@ export default function Page() {
                             boxShadow: "none",
                             fontFamily: "'Josefin Sans', sans-serif",
                             fontWeight: "bold",
-
-                        }),
-                        multiValue: (provided) => ({
-                            ...provided,
-                            backgroundColor: "#96aa97",
-                            borderRadius: "10px",
-                        }),
-                        multiValueLabel: (provided) => ({
-                            ...provided,
-                            color: "#fff",
-                            fontSize: "14px",
-                            padding: "4px 8px",
-                            fontFamily: "'Josefin Sans', sans-serif",
-                        }),
-                        multiValueRemove: (provided) => ({
-                            ...provided,
-                            color: "#fff",
-                            cursor: "pointer",
-                            ':hover': {
-                                backgroundColor: "#383838",
-                            }
-                        }),
-                        menu: (provided) => ({
-                            ...provided,
-                            backgroundColor: "#fbf8f6",
-                            borderRadius: "10px",
-                            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-                            fontFamily: "'Josefin Sans', sans-serif",
-                        }),
-                        option: (provided, state) => ({
-                            ...provided,
-                            backgroundColor: state.isSelected ? "#96aa97" : "#fbf8f6",
-                            color: state.isSelected ? "#fff" : "#494a4a",
-                            cursor: "pointer",
-                            padding: "10px 20px",
-                            ':hover': {
-                                backgroundColor: "#e7e5e3",
-                            },
-                            fontFamily: "'Josefin Sans', sans-serif",
                         })
                     }}
                 />
             </div>
-            <textarea
-                name="message"
-                value={form.message}
-                onChange={handleChange}
-                placeholder="Message"
-                className="w-full max-w-[1200px] h-[248px] bg-[#e7e5e3] rounded-[10px] mt-4 p-4 text-[#494a4a] text-lg md:text-2xl font-bold font-['Josefin_Sans'] focus:outline-none resize-none"
-            />
+            <div className="w-full max-w-[1200px] mt-4">
+                <textarea
+                    name="message"
+                    value={form.message}
+                    onChange={handleChange}
+                    placeholder="Message"
+                    className="w-full h-[248px] bg-[#e7e5e3] rounded-[10px] p-4 text-[#494a4a] text-lg md:text-2xl font-bold font-['Josefin_Sans'] focus:outline-none resize-none"
+                />
+                {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
+            </div>
             <button
-                onClick={() => window.location.href = "/contact"}
+                onClick={handleSubmit}
                 className="bg-[#2C2C2C] text-white text-lg sm:text-xl px-6 py-3 rounded-lg transition border-2 border-transparent hover:bg-white hover:text-[#2C2C2C] hover:border-[#2C2C2C] mt-3"
             >
                 Submit
