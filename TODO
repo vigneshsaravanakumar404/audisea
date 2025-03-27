@@ -2,3 +2,7 @@ TODO:
 
 - About Page
 - Contact Page
+  - //! Move constatns to seperate file
+    //! implement email sending functionality
+    //! implement form validation
+    //! include the submit button

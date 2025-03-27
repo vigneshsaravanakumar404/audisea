@@ -69,6 +69,39 @@ export const offerings = [
     }
 ];
 
+export const subjectOptions = [
+    {
+        label: "Test Prep",
+        options: [
+            { value: "SAT Prep", label: "SAT" },
+            { value: "ACT Prep", label: "ACT" }
+        ]
+    },
+    {
+        label: "AP Sciences",
+        options: [
+            { value: "ap_biology", label: "AP Biology" },
+            { value: "ap_chemistry", label: "AP Chemistry" },
+            { value: "ap_environmental_science", label: "AP Environmental Science" },
+            { value: "ap_physics_1", label: "AP Physics 1: Algebra-Based" },
+            { value: "ap_physics_2", label: "AP Physics 2: Algebra-Based" },
+            { value: "ap_physics_c_electricity", label: "AP Physics C: Electricity and Magnetism" },
+            { value: "ap_physics_c_mechanics", label: "AP Physics C: Mechanics" }
+        ]
+    },
+    {
+        label: "AP Math & Computer Sciences",
+        options: [
+            { value: "ap_calculus_AB", label: "AP Calculus AB" },
+            { value: "ap_calculus_BC", label: "AP Calculus BC" },
+            { value: "ap_computer_science_a", label: "AP Computer Science A" },
+            { value: "ap_computer_science_principles", label: "AP Computer Science Principles" },
+            { value: "ap_precalculus", label: "AP Precalculus" },
+            { value: "ap_statistics", label: "AP Statistics" },
+        ]
+    }
+];
+
 export const testimonials = [
     {
         quote: "I really love this tutoring place. The tutors are extraordinary and explain the concepts perfectly.",

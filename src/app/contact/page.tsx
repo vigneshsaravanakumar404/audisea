@@ -1,51 +1,28 @@
 "use client";
 
 import Image from "next/image";
-import phone from "../../../public/Phone.svg";
-import Mail from "../../../public/mail.svg";
-import location from "../../../public/location_on.svg";
 import { useState } from "react";
 import Select from "react-select";
+import { useSearchParams } from 'next/navigation'
+import Mail from "../../../public/mail.svg";
+import phone from "../../../public/Phone.svg";
+import location from "../../../public/location_on.svg";
+import { subjectOptions } from "@/data/constants";
 
-const subjectOptions = [
-    {
-        label: "Test Prep",
-        options: [
-            { value: "sat", label: "SAT" },
-            { value: "act", label: "ACT" }
-        ]
-    },
-    {
-        label: "AP Sciences",
-        options: [
-            { value: "ap_biology", label: "AP Biology" },
-            { value: "ap_chemistry", label: "AP Chemistry" },
-            { value: "ap_environmental_science", label: "AP Environmental Science" },
-            { value: "ap_physics_1", label: "AP Physics 1: Algebra-Based" },
-            { value: "ap_physics_2", label: "AP Physics 2: Algebra-Based" },
-            { value: "ap_physics_c_electricity", label: "AP Physics C: Electricity and Magnetism" },
-            { value: "ap_physics_c_mechanics", label: "AP Physics C: Mechanics" }
-        ]
-    },
-    {
-        label: "AP Math & Computer Sciences",
-        options: [
-            { value: "ap_calculus_AB", label: "AP Calculus AB" },
-            { value: "ap_calculus_BC", label: "AP Calculus BC" },
-            { value: "ap_computer_science_a", label: "AP Computer Science A" },
-            { value: "ap_computer_science_principles", label: "AP Computer Science Principles" },
-            { value: "ap_precalculus", label: "AP Precalculus" },
-            { value: "ap_statistics", label: "AP Statistics" },
-        ]
-    }
-];
+
+//! implement email sending functionality
+//! implement form validation
 
 export default function Page() {
+
+    const searchParams = useSearchParams();
+    const search = searchParams.get('subject');
+
     const [form, setForm] = useState({
         name: "",
         email: "",
         message: "",
-        subjects: []
+        subjects: search ? subjectOptions.flatMap(group => group.options).filter(option => search?.split(',').includes(option.value)) : []
     });
 
     const handleChange = (e) => {
@@ -56,19 +33,22 @@ export default function Page() {
         setForm({ ...form, subjects: selectedOptions });
     };
 
+
+
+
     return (
         <div className="w-full max-w-[1512px] mx-auto h-auto bg-[#fbf8f6] p-4 flex flex-col items-center min-h-screen justify-center">
-            <div className="text-[#96aa97] text-5xl font-bold font-['Josefin_Sans'] text-left my-6 w-full max-w-[1200px]">
+            <div className="text-[#96aa97] text-5xl font-bold font-['Josefin_Sans'] text-left mt-4 my- w-full max-w-[1200px]">
                 Contact
             </div>
-            <div className="w-full max-w-[1200px] flex flex-col md:flex-row items-center gap-8 text-[#494a4a] text-lg md:text-2xl font-['Josefin_Sans']">
+            <div className="w-full max-w-[1200px] flex flex-col md:flex-row items-center gap-0 md:gap-8 text-[#494a4a] text-lg md:text-2xl font-['Josefin_Sans']">
                 <div className="flex items-center gap-2">
                     <Image src={phone} alt="Phone" width={40} height={40} />
                     <span>808-590-8087</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <Image src={Mail} alt="Mail" width={47} height={47} />
-                    <span>audiseatutoring@gmail.com</span>
+                    <span>vignesh.saravanakumar.vs@gmail.com</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <Image src={location} alt="Location" width={42} height={42} />
@@ -131,7 +111,7 @@ export default function Page() {
                             color: "#fff",
                             cursor: "pointer",
                             ':hover': {
-                                backgroundColor: "#d9d9d9",
+                                backgroundColor: "#383838",
                             }
                         }),
                         menu: (provided) => ({
@@ -162,6 +142,12 @@ export default function Page() {
                 placeholder="Message"
                 className="w-full max-w-[1200px] h-[248px] bg-[#e7e5e3] rounded-[10px] mt-4 p-4 text-[#494a4a] text-lg md:text-2xl font-bold font-['Josefin_Sans'] focus:outline-none resize-none"
             />
+            <button
+                onClick={() => window.location.href = "/contact"}
+                className="bg-[#2C2C2C] text-white text-lg sm:text-xl px-6 py-3 rounded-lg transition border-2 border-transparent hover:bg-white hover:text-[#2C2C2C] hover:border-[#2C2C2C] mt-3"
+            >
+                Submit
+            </button>
         </div>
     );
 }
