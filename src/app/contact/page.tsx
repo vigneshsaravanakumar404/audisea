@@ -9,6 +9,9 @@ import phone from "../../../public/Phone.svg";
 import location from "../../../public/location_on.svg";
 import { subjectOptions } from "@/data/constants";
 
+//! Send Email Functionality
+//! Mobile View Fixing
+
 export default function Page() {
     const searchParams = useSearchParams();
     const search = searchParams.get('subject');
@@ -52,19 +55,19 @@ export default function Page() {
 
     return (
         <div className="w-full max-w-[1512px] mx-auto h-auto bg-[#fbf8f6] p-4 flex flex-col items-center min-h-screen justify-center">
-            <div className="text-[#96aa97] text-5xl font-bold font-['Josefin_Sans'] text-left mt-4 w-full max-w-[1200px]">
+            <div className="text-[#96aa97] text-5xl font-bold font-['Josefin_Sans'] text-center md:text-left mt-25 my-5 md:mt-8 w-full max-w-[1200px]">
                 Contact
             </div>
-            <div className="w-full max-w-[1200px] flex flex-col md:flex-row items-center gap-0 md:gap-8 text-[#494a4a] text-lg md:text-2xl font-['Josefin_Sans']">
-                <div className="flex items-center gap-2">
+            <div className="w-full max-w-[1200px] flex flex-col md:flex-row items-center text-center md:text-left gap-0 md:gap-8 text-[#494a4a] text-lg md:text-2xl font-['Josefin_Sans']">
+                <div className="flex flex-col md:flex-row items-center gap-2">
                     <Image src={phone} alt="Phone" width={40} height={40} />
                     <span>808-590-8087</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col md:flex-row items-center gap-2">
                     <Image src={Mail} alt="Mail" width={47} height={47} />
-                    <span>vignesh.saravanakumar.vs@gmail.com</span>
+                    <span>audiseatutoring@gmail.com</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col md:flex-row items-center gap-2">
                     <Image src={location} alt="Location" width={42} height={42} />
                     <span>Newport Beach, CA</span>
                 </div>
@@ -112,6 +115,45 @@ export default function Page() {
                             boxShadow: "none",
                             fontFamily: "'Josefin Sans', sans-serif",
                             fontWeight: "bold",
+
+                        }),
+                        multiValue: (provided) => ({
+                            ...provided,
+                            backgroundColor: "#96aa97",
+                            borderRadius: "10px",
+                        }),
+                        multiValueLabel: (provided) => ({
+                            ...provided,
+                            color: "#fff",
+                            fontSize: "14px",
+                            padding: "4px 8px",
+                            fontFamily: "'Josefin Sans', sans-serif",
+                        }),
+                        multiValueRemove: (provided) => ({
+                            ...provided,
+                            color: "#fff",
+                            cursor: "pointer",
+                            ':hover': {
+                                backgroundColor: "#d9d9d9",
+                            }
+                        }),
+                        menu: (provided) => ({
+                            ...provided,
+                            backgroundColor: "#fbf8f6",
+                            borderRadius: "10px",
+                            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+                            fontFamily: "'Josefin Sans', sans-serif",
+                        }),
+                        option: (provided, state) => ({
+                            ...provided,
+                            backgroundColor: state.isSelected ? "#96aa97" : "#fbf8f6",
+                            color: state.isSelected ? "#fff" : "#494a4a",
+                            cursor: "pointer",
+                            padding: "10px 20px",
+                            ':hover': {
+                                backgroundColor: "#e7e5e3",
+                            },
+                            fontFamily: "'Josefin Sans', sans-serif",
                         })
                     }}
                 />
@@ -134,4 +176,5 @@ export default function Page() {
             </button>
         </div>
     );
+
 }
