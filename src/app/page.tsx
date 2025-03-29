@@ -119,30 +119,29 @@ function Offerings() {
   );
 }
 
-
 function Testimonials() {
-
-  const getVisibleCount = () => {
-    if (window.innerWidth >= 1024) return 5; // xl and above
-    if (window.innerWidth >= 768) return 4; // lg
-    if (window.innerWidth >= 640) return 3; // md
-    if (window.innerWidth >= 400) return 2; // sm
-    return 1; // xs
-  };
   const [index, setIndex] = useState(0);
-  const [visibleCount, setVisibleCount] = useState(getVisibleCount());
+  const [visibleCount, setVisibleCount] = useState(1);
 
   useEffect(() => {
+    const getVisibleCount = () => {
+      if (typeof window === 'undefined') return 1;
+      if (window.innerWidth >= 1024) return 5;
+      if (window.innerWidth >= 768) return 4;
+      if (window.innerWidth >= 640) return 3;
+      if (window.innerWidth >= 400) return 2;
+      return 1;
+    };
+
+    setVisibleCount(getVisibleCount());
+
     const handleResize = () => {
       setVisibleCount(getVisibleCount());
     };
 
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
-
 
   const prevTestimonial = () => {
     setIndex((prev) =>
@@ -164,39 +163,20 @@ function Testimonials() {
 
       <div className="relative w-full max-w-7xl overflow-hidden">
         <div className="flex items-center justify-center flex-col sm:flex-row">
-          {/* Left Button (Moves Below on XS) */}
+          {/* Left Button */}
           <button
             onClick={prevTestimonial}
-            className="sm:mr-8 mb-4 sm:mb-0 p-3 bg-white rounded-full shadow-lg hover:bg-gray-200 z-[1]"
+            className="sm:mr-8 mb-4 sm:mb-0 p-3 bg-white rounded-full shadow-lg hover:bg-gray-200"
           >
-            <svg
-              width="44"
-              height="44"
-              viewBox="0 0 44 44"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M22 14L14 22M14 22L22 30M14 22H30M42 22C42 33.0457 33.0457 42 22 42C10.9543 42 2 33.0457 2 22C2 10.9543 2 2 22 2C33.0457 2 42 10.9543 42 22Z"
-                stroke="#1E1E1E"
-                strokeWidth="4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            &lt;
           </button>
 
           {/* Carousel */}
           <div className="relative w-full max-w-7xl flex justify-center overflow-hidden">
             <div className="flex space-x-6">
               {testimonials.slice(index, index + visibleCount).map((testimonial, idx) => (
-                <div
-                  key={idx}
-                  className="w-full sm:w-[280px] md:w-[340px] p-6 bg-white rounded-lg shadow-md"
-                >
-                  <p className="text-gray-800 text-lg font-semibold mb-4">
-                    “{testimonial.quote}”
-                  </p>
+                <div key={idx} className="w-full sm:w-[280px] md:w-[340px] p-6 bg-white rounded-lg shadow-md">
+                  <p className="text-gray-800 text-lg font-semibold mb-4">“{testimonial.quote}”</p>
                   <div className="text-gray-600 font-semibold">{testimonial.name}</div>
                   <div className="text-gray-500 text-sm">{testimonial.role}</div>
                 </div>
@@ -207,29 +187,16 @@ function Testimonials() {
           {/* Right Button */}
           <button
             onClick={nextTestimonial}
-            className="sm:ml-8 mt-4 sm:mt-0 p-3 bg-white rounded-full shadow-lg hover:bg-gray-200 z-0"
+            className="sm:ml-8 mt-4 sm:mt-0 p-3 bg-white rounded-full shadow-lg hover:bg-gray-200"
           >
-            <svg
-              width="44"
-              height="44"
-              viewBox="0 0 44 44"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M22 30L30 22M30 22L22 14M30 22H14M42 22C42 33.0457 33.0457 42 22 42C10.9543 42 2 33.0457 2 22C2 10.9543 2 2 22 2C33.0457 2 42 10.9543 42 22Z"
-                stroke="#1E1E1E"
-                strokeWidth="4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            &gt;
           </button>
         </div>
       </div>
     </div>
   );
 }
+
 
 
 function Contact() {
