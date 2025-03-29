@@ -10,9 +10,6 @@ import phone from "../../../public/Phone.svg";
 import location from "../../../public/location_on.svg";
 import { subjectOptions } from "@/data/constants";
 
-//! Send Email Functionality
-//! Mobile View Fixing
-
 export default function Page() {
     return (
         <Suspense fallback={<div>Loading...</div>}>
