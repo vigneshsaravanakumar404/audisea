@@ -11,11 +11,7 @@ export default function Navbar() {
       </Link>
 
       <div className="flex gap-8 mr-[10px]">
-        <Link href="/about">
-          <div className="text-3xl text-[#494a4a] font-['Josefin_Sans'] transition-all duration-300 hover:text-[#96aa97] hover:-translate-y-1 cursor-pointer">
-            About
-          </div>
-        </Link>
+
         <Link href="/contact">
           <div className="text-3xl text-[#494a4a] font-['Josefin_Sans'] transition-all duration-300 hover:text-[#96aa97] hover:-translate-y-1 cursor-pointer">
             Contact

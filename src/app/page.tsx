@@ -2,6 +2,9 @@
 import Image from "next/image";
 import home from "../../public/home.svg";
 import whyUs1 from "../../public/whyUs-1.svg";
+import whyUs2 from "../../public/whyUs-2.svg";
+import whyUs3 from "../../public/whyUs-3.svg";
+
 import leadImage from "../../public/Group 16.svg";
 import whyUsElipse from "../../public/whyUsElipse.svg";
 import { useState, useEffect } from "react";
@@ -69,7 +72,7 @@ function WhyUs() {
         </div>
         <div className="flex flex-col items-center flex-1 min-w-[250px] relative">
           <div className="w-[200px] h-[200px] sm:w-[250px] sm:h-[250px] lg:w-[271px] lg:h-[271px] bg-[#fbf8f6] rounded-full flex items-center justify-center relative">
-            <Image src={whyUs1} alt="Personalized" className="w-full h-full rounded-full" />
+            <Image src={whyUs2} alt="Personalized" className="w-full h-full rounded-full" />
             <Image
               src={whyUsElipse}
               alt="Elipse"
@@ -82,7 +85,7 @@ function WhyUs() {
         </div>
         <div className="flex flex-col items-center flex-1 min-w-[250px] relative">
           <div className="w-[200px] h-[200px] sm:w-[250px] sm:h-[250px] lg:w-[271px] lg:h-[271px] bg-[#fbf8f6] rounded-full flex items-center justify-center relative">
-            <Image src={whyUs1} alt="Personalized" className="w-full h-full rounded-full" />
+            <Image src={whyUs3} alt="Personalized" className="w-full h-full rounded-full" />
             <Image
               src={whyUsElipse}
               alt="Elipse"
