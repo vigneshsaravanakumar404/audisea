@@ -33,7 +33,7 @@ export default function Page() {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubjectChange = (selectedOptions: { value: string; label: string; }[]) => {
+    const handleSubjectChange = (selectedOptions: any) => {
         setForm({ ...form, subjects: selectedOptions });
     };
 
