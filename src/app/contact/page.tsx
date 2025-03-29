@@ -29,16 +29,16 @@ export default function Page() {
         message: ""
     });
 
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubjectChange = (selectedOptions) => {
+    const handleSubjectChange = (selectedOptions: { value: string; label: string; }[]) => {
         setForm({ ...form, subjects: selectedOptions });
     };
 
     const validateForm = () => {
-        let newErrors = { name: "", email: "", message: "" };
+        const newErrors = { name: "", email: "", message: "" };
         if (!form.name) newErrors.name = "Name is required";
         if (!form.email) newErrors.email = "Email is required";
         else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) newErrors.email = "Invalid email format";
