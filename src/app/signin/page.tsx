@@ -18,7 +18,7 @@ export default function SignInPage() {
           <input
             id="email"
             type="email"
-            className="h-10 bg-[#fbf8f6] rounded-xl border border-[#96aa97] focus:ring-2 focus:ring-[#96aa97] focus:border-transparent w-full"
+            className="h-10 bg-[#fbf8f6] p-[10px] text-[#494A4A] rounded-xl border border-[#96aa97] focus:ring-2 focus:ring-[#96aa97] focus:border-transparent w-full"
           />
         </div>
 
@@ -30,7 +30,7 @@ export default function SignInPage() {
           <input
             id="password"
             type="password"
-            className="h-10 bg-[#fbf8f6] rounded-xl border border-[#96aa97] focus:ring-2 focus:ring-[#96aa97] focus:border-transparent w-full"
+            className="h-10 bg-[#fbf8f6]  p-[10px] text-[#494A4A] rounded-xl border border-[#96aa97] focus:ring-2 focus:ring-[#96aa97] focus:border-transparent w-full"
           />
         </div>
 
