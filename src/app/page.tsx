@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import home from "../../public/home.svg";
+import home from "../../public/Group 21.svg";
 import whyUs1 from "../../public/whyUs-1.svg";
 import whyUs2 from "../../public/whyUs-2.svg";
 import whyUs3 from "../../public/whyUs-3.svg";
@@ -31,7 +31,7 @@ function Hero() {
       <div className="mt-10"></div>
       <main className="flex flex-col items-center justify-center flex-1 p-6 md:flex-row md:items-center md:justify-center">
         <div className="relative w-full md:w-auto">
-          <Image src={home} alt="home1" className="w-full h-auto md:w-125 md:h-125" />
+          <Image src={home} alt="home1" className="w-full h-auto md:w-150 md:h-150" />
         </div>
         <div className="text-center mt-6 md:mt-0 md:text-right md:ml-16">
           <h1 className="text-[#96aa97] text-4xl md:text-6xl lg:text-9xl font-bold font-['Josefin_Sans']">Audisea</h1>
