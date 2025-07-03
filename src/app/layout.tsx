@@ -1,8 +1,9 @@
+"use client"
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Josefin_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "../components/navbar"
-import localFont from "next/font/local";
+import { usePathname } from "next/navigation";
 
 
 
@@ -21,23 +22,15 @@ const josefinSans = Josefin_Sans({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Audisea",
-  description: "Private tutoring by passionate people",
-};
 
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const hideNavbar = pathname.startsWith("/dashboard");
 
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} ${josefinSans.variable} antialiased`}>
-
-        <Navbar />
+        {!hideNavbar && <Navbar />}
         {children}
       </body>
     </html>
