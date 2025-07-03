@@ -4,6 +4,7 @@ import { Geist, Geist_Mono, Josefin_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "../components/navbar"
 import { usePathname } from "next/navigation";
+import { AuthProvider } from "./contexts/authContext";
 
 
 
@@ -30,8 +31,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} ${josefinSans.variable} antialiased`}>
-        {!hideNavbar && <Navbar />}
-        {children}
+        <AuthProvider>
+          {!hideNavbar && <Navbar />}
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

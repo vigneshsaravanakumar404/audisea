@@ -1,6 +1,10 @@
+"use client"
 import { DashboardLayoutProps, SidebarItem } from "../app/types/layout";
 import { House, Clock, Calendar, MessageSquare, DollarSign, Settings  } from "lucide-react";
 import Link from "next/link";
+import {doSignOut} from "@/firebase/auth";
+import { useRouter } from "next/navigation";
+
 
 export default function DashboardLayout({userType, profilePicture, name}: DashboardLayoutProps) {
   const sidebarItems: Record<DashboardLayoutProps["userType"], SidebarItem[]> = {
@@ -27,17 +31,24 @@ export default function DashboardLayout({userType, profilePicture, name}: Dashbo
 
   };
 
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await doSignOut();
+      router.replace("/signin");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
 return (
     <aside className="w-full md:w-[280px] bg-gradient-to-b from-[#494a4a] to-[#3a3b3b] h-screen md:h-full flex flex-col shadow-xl fixed md:relative z-50">
       {/* Profile Section */}
       <div className="flex flex-col items-center pt-8 pb-6 px-4 border-b border-[#5a5a5a]/30">
-        <div className="w-20 h-20 bg-gradient-to-br from-[#96aa97] to-[#86998a] rounded-full shadow-lg flex items-center justify-center">
-          <span className="text-white text-2xl font-semibold">
-            {name ? name.charAt(0).toUpperCase() : 'U'}
-          </span>
-        </div>
+        <img src={profilePicture} alt="Profile" className = "w-20 h-20 rounded-full"/>
         <h2 className="mt-4 font-medium text-[#fbf8f6] text-lg text-center">
-          {name || "User"}
+          {name}
         </h2>
         <p className="text-[#96aa97] text-sm font-medium capitalize mt-1">
           {userType}
@@ -65,6 +76,9 @@ return (
         <div className="text-center">
           <p className="text-[#96aa97] text-xs font-medium">Audisea</p>
           <p className="text-[#7a7b7b] text-xs mt-1">Private Tutoring</p>
+          <button className="text-[#96aa97] text-xs font-medium mt-2 hover:text-[#fbf8f6] transition-colors duration-200" onClick ={handleLogout}>
+            Logout
+          </button>
         </div>
       </div>
     </aside>
