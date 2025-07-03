@@ -9,6 +9,7 @@ import leadImage from "../../public/Group 16.svg";
 import whyUsElipse from "../../public/whyUsElipse.svg";
 import { useState, useEffect } from "react";
 import { testimonials, offerings } from "@/data/constants";
+import { Quote } from "lucide-react"
 import OfferingCard from "@/components/OfferingCard";
 
 
@@ -24,103 +25,107 @@ export default function Home() {
     </div>
   );
 }
-
 function Hero() {
   return (
-    <div className="w-screen h-screen flex flex-col bg-[#FBF8F6] overflow-hidden">
-      <div className="mt-10"></div>
-      <main className="flex flex-col items-center justify-center flex-1 p-6 md:flex-row md:items-center md:justify-center">
-        <div className="relative w-full md:w-auto">
-          <Image src={home} alt="home1" className="w-full h-auto md:w-150 md:h-150" />
+    <section className="w-full min-h-screen flex items-center justify-center bg-[#FBF8F6] overflow-hidden">
+      <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-7xl px-6 py-12 gap-12 md:gap-24">
+        <div className="flex-1 flex justify-center items-center">
+          <Image src={home} alt="home1" className="w-full max-w-xs md:max-w-md lg:max-w-lg h-auto drop-shadow-xl" />
         </div>
-        <div className="text-center mt-6 md:mt-0 md:text-right md:ml-16">
-          <h1 className="text-[#96aa97] text-4xl md:text-6xl lg:text-9xl font-bold font-['Josefin_Sans']">Audisea</h1>
-          <p className="mt-4 text-[#494a4a] text-xl md:text-2xl lg:text-4xl font-['Josefin_Sans']">
+        <div className="flex-1 flex flex-col items-center md:items-end text-center md:text-right">
+          <h1 className="text-primary text-4xl md:text-6xl lg:text-8xl font-bold font-['Josefin_Sans'] drop-shadow-lg mb-6">
+            Audisea
+          </h1>
+          <p className="text-dark text-xl md:text-2xl lg:text-4xl font-['Josefin_Sans'] mb-3">
             Private tutoring by <span className="font-bold">passionate</span> people.
+          </p>
+          <p className="text-accent text-base md:text-lg mb-8">
+            Empowering students and parents with personalized learning.
           </p>
           <button
             onClick={() => window.location.href = "/contact"}
-            className="mt-4 px-6 py-3 rounded-full border border-[#2c2c2c] text-[#494a4a] text-lg md:text-xl lg:text-2xl font-['Josefin_Sans'] transition-transform transform hover:scale-105 hover:bg-[#2c2c2c] hover:text-white"
+            className="px-8 py-4 rounded-full border-2 border-primary bg-primary text-white text-lg md:text-xl lg:text-2xl font-['Josefin_Sans'] shadow-lg transition-transform transform hover:scale-105 hover:bg-[#7a8f7b] hover:border-[#7a8f7b] focus:outline-none focus:ring-2 focus:ring-primary"
           >
             Get Started Now
           </button>
         </div>
-      </main>
-    </div>
+      </div>
+    </section>
   );
 }
 
 function WhyUs() {
+  const whyUsData = [
+    {
+      img: whyUs1,
+      title: "Personalized",
+      desc: "Tailored learning plans for every student.",
+      elipseClass: "top-[-5px] right-[-5px]",
+    },
+    {
+      img: whyUs2,
+      title: "Expert Tutors",
+      desc: "Learn from passionate, experienced educators.",
+      elipseClass: "bottom-[-5px] right-[-5px]",
+    },
+    {
+      img: whyUs3,
+      title: "Proven Results",
+      desc: "Track record of student success and satisfaction.",
+      elipseClass: "top-[-5px] right-[-5px]",
+    },
+  ];
   return (
-    <div className="w-screen bg-[#96aa97] py-10 px-6 sm:px-20">
-      <h1 className="text-white text-4xl sm:text-5xl lg:text-5xl font-bold font-['Josefin_Sans'] text-center mb-10">
+    <div className="w-screen bg-primary py-16 px-6 sm:px-20">
+      <h1 className="text-offwhite text-4xl sm:text-5xl lg:text-5xl font-bold font-['Josefin_Sans'] text-center mb-10 drop-shadow-lg">
         Why Audisea?
       </h1>
-      <div className="flex flex-wrap justify-evenly gap-10 px-0 sm:px-0 lg:px-0">
-        <div className="flex flex-col items-center flex-1 min-w-[250px] relative">
-          <div className="w-[200px] h-[200px] sm:w-[250px] sm:h-[250px] lg:w-[271px] lg:h-[271px] bg-[#fbf8f6] rounded-full flex items-center justify-center relative">
-            <Image src={whyUs1} alt="Personalized" className="w-full h-full rounded-full" />
-            <Image
-              src={whyUsElipse}
-              alt="Elipse"
-              className="absolute top-[-5px] right-[-5px] w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] lg:w-[70px] lg:h-[70px]"
-            />
+      <div className="flex flex-wrap justify-evenly gap-10">
+        {whyUsData.map((item, idx) => (
+          <div key={idx} className="flex flex-col items-center flex-1 min-w-[250px] relative">
+            <div className="w-[200px] h-[200px] sm:w-[250px] sm:h-[250px] lg:w-[271px] lg:h-[271px] bg-offwhite rounded-full flex items-center justify-center relative shadow-lg">
+              <Image src={item.img} alt={item.title} className="w-full h-full rounded-full" />
+              <Image
+                src={whyUsElipse}
+                alt="Elipse"
+                className={`absolute ${item.elipseClass} w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] lg:w-[70px] lg:h-[70px]`}
+              />
+            </div>
+            <h2 className="text-offwhite text-xl sm:text-2xl lg:text-4xl font-bold font-['Josefin_Sans'] mt-4 text-center">
+              {item.title}
+            </h2>
+            <p className="text-offwhite text-base sm:text-lg mt-2 text-center max-w-xs">{item.desc}</p>
           </div>
-          <h2 className="text-white text-xl sm:text-2xl lg:text-4xl font-bold font-['Josefin_Sans'] mt-4 text-center">
-            Personalized
-          </h2>
-        </div>
-        <div className="flex flex-col items-center flex-1 min-w-[250px] relative">
-          <div className="w-[200px] h-[200px] sm:w-[250px] sm:h-[250px] lg:w-[271px] lg:h-[271px] bg-[#fbf8f6] rounded-full flex items-center justify-center relative">
-            <Image src={whyUs2} alt="Personalized" className="w-full h-full rounded-full" />
-            <Image
-              src={whyUsElipse}
-              alt="Elipse"
-              className="absolute bottom-[-5px] right-[-5px] w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] lg:w-[70px] lg:h-[70px]"
-            />
-          </div>
-          <h2 className="text-white text-xl sm:text-2xl lg:text-4xl font-bold font-['Josefin_Sans'] mt-4 text-center">
-            Personalized
-          </h2>
-        </div>
-        <div className="flex flex-col items-center flex-1 min-w-[250px] relative">
-          <div className="w-[200px] h-[200px] sm:w-[250px] sm:h-[250px] lg:w-[271px] lg:h-[271px] bg-[#fbf8f6] rounded-full flex items-center justify-center relative">
-            <Image src={whyUs3} alt="Personalized" className="w-full h-full rounded-full" />
-            <Image
-              src={whyUsElipse}
-              alt="Elipse"
-              className="absolute top-[-5px] right-[-5px] w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] lg:w-[70px] lg:h-[70px]"
-            />
-          </div>
-          <h2 className="text-white text-xl sm:text-2xl lg:text-4xl font-bold font-['Josefin_Sans'] mt-4 text-center">
-            Personalized
-          </h2>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Offerings() {
-  return (
-    <div className="w-screen bg-[url('/../../offeringBg.svg')] p-10 sm:p-20">
-      <h1 className="text-[#494a4a] font-bold font-['Josefin_Sans'] text-[60px] mb-[10px] text-center sm:text-left">Offerings</h1>
-      <h3 className="text-[#494a4a] font-['Josefin_Sans'] text-[24px] mb-[40px] text-center sm:text-left">
-        We offer all kinds of test preparation. You can be sure that we can make your child succeed.
-      </h3>
-      <div className="w-full flex flex-wrap justify-center gap-5 sm:gap-10">
-        {offerings.map((offering, index) => (
-          <OfferingCard
-            key={index}
-            title={offering.title}
-            buttonText={offering.buttonText}
-            description={offering.description}
-          />
         ))}
       </div>
     </div>
   );
 }
+
+
+function Offerings() {
+  return (
+    <section className="w-full bg-[#FBF8F6] py-20 px-4 sm:px-10 lg:px-32 flex flex-col items-center">
+      <h1 className="text-dark font-bold font-['Josefin_Sans'] text-4xl sm:text-5xl lg:text-6xl mb-4 text-center">Offerings</h1>
+      <h3 className="text-dark font-['Josefin_Sans'] text-lg sm:text-2xl mb-10 text-center max-w-2xl">
+        We offer all kinds of test preparation. You can be sure that we can make your child succeed.
+      </h3>
+      <div className="w-full flex flex-wrap justify-center gap-8 sm:gap-10">
+        {offerings.map((offering, index) => (
+          <div
+            key={index}
+            className="bg-offwhite rounded-2xl shadow-lg p-8 flex flex-col items-center max-w-xs min-w-[260px] transition-transform hover:scale-105 border border-light"
+          >
+            <h2 className="text-primary text-2xl font-bold mb-2 text-center font-['Josefin_Sans']">{offering.title}</h2>
+            <p className="text-dark text-base mb-4 text-center">{offering.description}</p>
+            <button className="mt-auto px-6 py-2 rounded-full bg-primary text-white font-semibold text-base shadow hover:bg-[#7a8f7b] transition-colors">{offering.buttonText}</button>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 
 function Testimonials() {
   const [index, setIndex] = useState(0);
@@ -129,74 +134,103 @@ function Testimonials() {
   useEffect(() => {
     const getVisibleCount = () => {
       if (typeof window === 'undefined') return 1;
-      if (window.innerWidth >= 1024) return 5;
-      if (window.innerWidth >= 768) return 4;
-      if (window.innerWidth >= 640) return 3;
-      if (window.innerWidth >= 400) return 2;
+      if (window.innerWidth >= 1280) return 4;
+      if (window.innerWidth >= 1024) return 3;
+      if (window.innerWidth >= 640) return 2;
       return 1;
     };
-
     setVisibleCount(getVisibleCount());
-
-    const handleResize = () => {
-      setVisibleCount(getVisibleCount());
-    };
-
+    const handleResize = () => setVisibleCount(getVisibleCount());
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Always keep index in bounds
+  useEffect(() => {
+    if (index >= testimonials.length) {
+      setIndex(0);
+    }
+  }, [visibleCount, testimonials.length]);
+
+  // Helper to get the correct slice, wrapping if needed
+  const getVisibleTestimonials = () => {
+    if (testimonials.length <= visibleCount) return testimonials;
+    let result = [];
+    for (let i = 0; i < visibleCount; i++) {
+      result.push(testimonials[(index + i) % testimonials.length]);
+    }
+    return result;
+  };
+
   const prevTestimonial = () => {
-    setIndex((prev) =>
-      prev === 0 ? testimonials.length - visibleCount : prev - visibleCount
-    );
+    if (testimonials.length <= visibleCount) return;
+    setIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
   };
 
   const nextTestimonial = () => {
-    setIndex((prev) =>
-      prev + visibleCount >= testimonials.length ? 0 : prev + visibleCount
-    );
+    if (testimonials.length <= visibleCount) return;
+    setIndex((prev) => (prev + 1) % testimonials.length);
   };
 
   return (
-    <div className="w-full bg-[#96aa97] py-16 px-6 flex flex-col items-center">
-      <h2 className="text-white text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-10">
-        Don’t just take it from us!
+    <section className="w-full bg-primary py-20 px-4 flex flex-col items-center border-t border-light">
+      <h2 className="text-offwhite text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-12 font-['Josefin_Sans'] drop-shadow-lg">
+        What Our Clients Say
       </h2>
-
-      <div className="relative w-full max-w-7xl overflow-hidden">
-        <div className="flex items-center justify-center flex-col sm:flex-row">
+      <div className="relative w-full max-w-7xl flex flex-col items-center">
+        <div className="flex items-center justify-center w-full gap-4">
           {/* Left Button */}
           <button
             onClick={prevTestimonial}
-            className="sm:mr-8 mb-4 sm:mb-0 p-3 bg-white rounded-full shadow-lg hover:bg-gray-200"
+            className="p-4 bg-offwhite border-2 border-primary rounded-full shadow hover:bg-primary hover:text-offwhite text-primary text-2xl font-bold transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offwhite"
+            aria-label="Previous testimonials"
+            disabled={testimonials.length <= visibleCount}
           >
-            &lt;
+            &#8592;
           </button>
-
           {/* Carousel */}
-          <div className="relative w-full max-w-7xl flex justify-center overflow-hidden">
-            <div className="flex space-x-6">
-              {testimonials.slice(index, index + visibleCount).map((testimonial, idx) => (
-                <div key={idx} className="w-full sm:w-[280px] md:w-[340px] p-6 bg-white rounded-lg shadow-md">
-                  <p className="text-gray-800 text-lg font-semibold mb-4">“{testimonial.quote}”</p>
-                  <div className="text-gray-600 font-semibold">{testimonial.name}</div>
-                  <div className="text-gray-500 text-sm">{testimonial.role}</div>
+          <div className="relative w-full flex justify-center overflow-hidden">
+            <div className="flex gap-8 transition-all duration-500 items-stretch">
+              {getVisibleTestimonials().map((testimonial, idx) => (
+                <div
+                  key={idx}
+                  className="w-full sm:w-[280px] md:w-[340px] pt-16 pb-8 px-8 bg-[#FBF8F6] border-primary/20 rounded-3xl shadow-xl flex flex-col items-center justify-between animate-fadeIn transition-transform duration-200 hover:-translate-y-2 hover:shadow-2xl relative"
+                  style={{ height: 340, minHeight: 260, maxHeight: 360 }}
+                >
+
+                  <div className="flex-1 flex flex-col justify-center w-full mt-4">
+                    <p className="text-dark text-xl font-semibold mb-4 text-center italic line-clamp-5">"{testimonial.quote}"</p>
+                  </div>
+                  <div className="w-full flex flex-col items-center mt-4">
+                    <div className="w-10 h-1 bg-primary rounded-full mb-3" />
+                    <div className="text-primary font-bold text-base mb-1">{testimonial.name}</div>
+                    <div className="text-accent text-sm">{testimonial.role}</div>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
-
           {/* Right Button */}
           <button
             onClick={nextTestimonial}
-            className="sm:ml-8 mt-4 sm:mt-0 p-3 bg-white rounded-full shadow-lg hover:bg-gray-200"
+            className="p-4 bg-offwhite border-2 border-primary rounded-full shadow hover:bg-primary hover:text-offwhite text-primary text-2xl font-bold transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offwhite"
+            aria-label="Next testimonials"
+            disabled={testimonials.length <= visibleCount}
           >
-            &gt;
+            &#8594;
           </button>
         </div>
       </div>
-    </div>
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.7s;
+        }
+      `}</style>
+    </section>
   );
 }
 
@@ -204,14 +238,14 @@ function Testimonials() {
 
 function Contact() {
   return (
-    <div className="w-full h-auto relative overflow-hidden bg-white py-16 px-10 sm:px-40">
+    <div className="w-full h-auto relative overflow-hidden bg-offwhite py-16 px-10 sm:px-40">
       <div className="flex flex-col sm:flex-row items-center justify-between">
-        <div className="text-center sm:text-left text-[#494a4a] text-4xl sm:text-5xl lg:text-6xl font-bold font-['Josefin_Sans'] mb-8 sm:mb-0">
+        <div className="text-center sm:text-left text-dark text-4xl sm:text-5xl lg:text-6xl font-bold font-['Josefin_Sans'] mb-8 sm:mb-0">
           Want to learn more?
           <div className="mt-4">
             <button
               onClick={() => window.location.href = "/contact"}
-              className="bg-[#2C2C2C] text-white text-lg sm:text-xl px-6 py-3 rounded-lg transition border-2 border-transparent hover:bg-white hover:text-[#2C2C2C] hover:border-[#2C2C2C]"
+              className="bg-primary text-white text-lg sm:text-xl px-6 py-3 rounded-lg transition border-2 border-transparent hover:bg-[#7a8f7b] hover:text-white hover:border-[#7a8f7b]"
             >
               Contact Us
             </button>
