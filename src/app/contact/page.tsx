@@ -22,7 +22,7 @@ function ContactForm() {
     const params = useSearchParams();
     const search = params.get('subject');
     type SubjectOption = { value: string; label: string };
-
+    
 
     const [form, setForm] = useState({
         name: "",
@@ -83,7 +83,7 @@ function ContactForm() {
                     </div>
                     <div className="flex flex-col md:flex-row items-center gap-2">
                         <Image src={location} alt="Location" width={42} height={42} />
-                        <span className="text-[#494a4a] text-lg md:text-xl">Newport Beach, CA</span>
+                        <span className="text-[#494a4a] text-lg md:text-xl">Virtual</span>
                     </div>
                 </div>
                 {/* Form */}
@@ -96,7 +96,7 @@ function ContactForm() {
                                 value={form.name}
                                 onChange={handleChange}
                                 placeholder="Name"
-                                className="w-full h-[64px] bg-[#e7e5e3] rounded-[10px] p-4 text-[#494a4a] text-lg md:text-xl font-['Josefin_Sans'] focus:outline-none"
+                                className="w-full h-[64px] bg-[#e7e5e3] rounded-[10px] p-4 text-[#807F80] text-lg md:text-xl font-['Josefin_Sans'] focus:outline-none"
                             />
                             {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                         </div>
@@ -119,7 +119,7 @@ function ContactForm() {
                             value={form.subjects}
                             onChange={handleSubjectChange}
                             placeholder="Select Subjects"
-                            className="basic-multi-select"
+                            className="basic-multi-select text-[#807F80] text-lg md:text-xl font-['Josefin_Sans'] !important"
                             classNamePrefix="select"
                             styles={{
                                 control: (provided) => ({

@@ -1,16 +1,32 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import googleIcon from "../../../public/google.png";
 import { doSignInWithGoogle } from "@/firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from "@/firebase/firebase";
+import { useAuth } from "../contexts/authContext";
+import { getUserData } from "@/data/firestore/user";
 
 export default function SignInPage() {
   const router = useRouter();
+  const { currentUser } = useAuth();
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [error, setError] = useState("");
 
+  // Redirects to respective role dashboard if user is already logged in
+  useEffect(() => {
+    const userSet = async () => {
+      if (currentUser?.uid) {
+        const user = await getUserData(currentUser.uid);
+        if (user) {
+          router.replace(`/dashboard/${user.userType}`);
+        }
+      }
+    };
+    userSet();
+  }, []);
+
+
+  // Google sign-in function. If user is already logged in, redirects to respective role dashboard. If it's a new user, redirects to choose role page
   const onGoogleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -18,12 +34,9 @@ export default function SignInPage() {
       setIsSigningIn(true);
       try {
         const result = await doSignInWithGoogle();
-        const user = result.user || auth.currentUser;
-        const userRef = doc(db, "users", user.uid);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-          const userType = userSnap.data().userType;
-          router.replace(`/dashboard/${userType}`);
+        const user = await getUserData(result.user.uid);
+        if (user) {
+          router.replace(`/dashboard/${user.userType}`);
         } else {
           router.replace("/choose");
         }
@@ -35,7 +48,7 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#fbf8f6] to-[#e6ede7] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-offwhite px-4">
       <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-10 border border-[#e5e7eb] flex flex-col items-center space-y-6">
         {/* Title */}
         <h2 className="text-[#96aa97] text-2xl font-semibold font-['Josefin_Sans'] text-center">

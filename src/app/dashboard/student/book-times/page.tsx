@@ -1,14 +1,17 @@
 "use client"
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Calendar, Clock, User, BookOpen, CheckCircle, ChevronRight, ChevronLeft, X } from "lucide-react";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs, { Dayjs } from 'dayjs';
+import { useAuth } from "@/app/contexts/authContext";
+import { UserInfo } from "@/app/types/user";  
+import { getUserData } from "@/data/firestore/user";
 
-export default function StudentTimings() {
-  // Form state management
+export default function BookTimes () {
+  const { currentUser } = useAuth();
   const [selectedTutor, setSelectedTutor] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
@@ -173,6 +176,7 @@ export default function StudentTimings() {
                       className="w-full p-4 border-2 border-gray-200 rounded-xl bg-white text-lg font-medium text-[#2f2f2f] focus:outline-none focus:border-[#96aa97] focus:ring-4 focus:ring-[#96aa97]/10 transition-all"
                       required
                     >
+                      
                       <option value="">Choose a tutor...</option>
                       <option value="tutor1">Dr. Sarah Johnson - Mathematics</option>
                       <option value="tutor2">Prof. Michael Chen - Physics</option>
@@ -481,6 +485,7 @@ export default function StudentTimings() {
                 <button 
                   type="submit"
                   disabled={!isFormValid}
+                  onClick={handleSubmit}
                   className={`w-full sm:w-auto text-lg font-semibold px-12 py-4 rounded-xl shadow-lg transition-all duration-200 ${
                     isFormValid 
                       ? 'bg-gradient-to-r from-[#96aa97] to-[#86998a] text-white hover:shadow-xl transform hover:-translate-y-0.5' 

@@ -2,15 +2,14 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../contexts/authContext";
 import { useRouter } from "next/navigation";
-import { db } from "@/firebase/firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { User, Users } from "lucide-react"; // Make sure you have lucide-react installed
+import { User, Users } from "lucide-react"; 
+import { getUserData, setUserData } from "@/data/firestore/user";
+import { setStudentData } from "@/data/firestore/student";
+import { setParentData } from "@/data/firestore/parent";
 
 export default function ChooseRolePage() {
   const { currentUser, userLoggedIn, loading } = useAuth();
   const router = useRouter();
-
-  const [userData, setUserData] = useState<any>(null);
   const [selectedRole, setSelectedRole] = useState<"parent" | "student">("parent");
 
   // Redirect to /signin if not logged in
@@ -20,30 +19,26 @@ export default function ChooseRolePage() {
     }
   }, [loading, userLoggedIn, router]);
 
+  // Redirects to respective role dashboard if user is already logged in
   useEffect(() => {
-    async function fetchUser() {
+    const userSet = async () => {
       if (currentUser?.uid) {
-        const userRef = doc(db, "users", currentUser.uid);
-        const userSnap = await getDoc(userRef);
-
-        if (userSnap.exists()) {
-          router.replace(`/dashboard/${userSnap.data().userType}`);
-          return;
-        } else {
-          setUserData(null);
+        const userData = await getUserData(currentUser.uid);
+        if(userData) {
+          router.replace(`/dashboard/${userData.userType}`);
         }
-      }
-    }
-
+      } 
+    };
     if (!loading && userLoggedIn) {
-      fetchUser();
+      userSet();
     }
   }, [currentUser, loading, userLoggedIn, router]);
+
 
   const handleSubmit = async () => {
     if (!currentUser) return;
 
-    const userRef = doc(db, "users", currentUser.uid);
+    // Creates new user document
     const userDoc = {
       uid: currentUser.uid,
       name: currentUser.displayName || "",
@@ -52,8 +47,22 @@ export default function ChooseRolePage() {
       userType: selectedRole,
     };
 
-    await setDoc(userRef, userDoc);
+    // Saves user document
+    await setUserData(currentUser.uid, userDoc);
 
+    // Creates new student document
+    if(selectedRole === "student")
+    {
+      await setStudentData(currentUser.uid, { uid: currentUser.uid, tutors: [], parents: [] });
+    }
+
+    // Creates new parent document
+    if(selectedRole === "parent")
+    {
+      await setParentData(currentUser.uid, { uid: currentUser.uid });
+    }
+
+    // Redirects to respective role dashboard
     try {
       router.replace(`/dashboard/${selectedRole}`);
     } catch (error) {
@@ -61,6 +70,7 @@ export default function ChooseRolePage() {
     }
   };
 
+  // Displays loading screen
   if (loading || !userLoggedIn) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#fbf8f6]">

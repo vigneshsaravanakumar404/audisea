@@ -1,7 +1,30 @@
+"use client";
 import React from "react";
 import {Plus, Clock, User} from "lucide-react";
+import { getUserData, setUserData } from "@/data/firestore/user";
+import { useAuth } from "@/app/contexts/authContext";
+import { useEffect, useState } from "react";
+import { UserInfo } from "@/app/types/user";
+
 
 export default function StudentHomePage() {
+
+  const { currentUser } = useAuth();
+  const [user, setUser] = useState<UserInfo | null>(null);
+
+  useEffect(() => {
+    const userSet = async () => {
+      if (currentUser?.uid) {
+        const userData = await getUserData(currentUser.uid);
+        setUser(userData as UserInfo | null);
+      } else {
+        setUser(null);
+      }
+    };
+    userSet();
+  }, [currentUser]);
+
+
   return (
     <div className="bg-[#fbf8f6] flex justify-center w-full">
       <div className="bg-[#fbf8f6] w-full max-w-[1512px]">
@@ -9,7 +32,7 @@ export default function StudentHomePage() {
         {/* Welcome Header */}
         <header className="w-full h-36 bg-[#6e7d6f] px-[74px] flex items-center">
           <h1 className="font-bold text-[#fbf8f6] text-4xl tracking-tight">
-            Welcome back, Bob Jr!
+            Welcome, {user?.name}!
           </h1>
         </header>
 
