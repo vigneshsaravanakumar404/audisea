@@ -8,26 +8,26 @@ import { useRouter } from "next/navigation";
 
 export default function DashboardLayout({userType, profilePicture, name}: DashboardLayoutProps) {
   const sidebarItems: Record<DashboardLayoutProps["userType"], SidebarItem[]> = {
-    student: [{ label: "Home", icon: House, path: "/dashboard/student" }, 
-      { label: "Book Times", icon: Clock, path: "/dashboard/student/book-times" }, 
-      { label: "All Sessions", icon: Calendar, path: "/dashboard/student/all-sessions" }, 
-      { label: "Chats", icon: MessageSquare, path: "/dashboard/student/chats" }, 
-      { label: "Billing", icon: DollarSign, path: "/dashboard/student/billing" }, 
-      { label: "Settings", icon: Settings, path: "/dashboard/student/settings" }],
+    student: [{ label: "Home", icon: House, path: "/dashboard" }, 
+      { label: "Book Times", icon: Clock, path: "/dashboard/book-times" }, 
+      { label: "All Sessions", icon: Calendar, path: "/dashboard/all-sessions" }, 
+      { label: "Chats", icon: MessageSquare, path: "/dashboard/chats" }, 
+      { label: "Billing", icon: DollarSign, path: "/dashboard/billing" }, 
+      { label: "Settings", icon: Settings, path: "/dashboard/settings" }],
     
-    parent: [{ label: "Home", icon: House, path: "/dashboard/parent" }, 
-      { label: "Book Times", icon: Clock, path: "/dashboard/parent/book-times" }, 
-      { label: "All Sessions", icon: Calendar, path: "/dashboard/parent/all-sessions" }, 
-      { label: "Chats", icon: MessageSquare, path: "/dashboard/parent/chats" }, 
-      { label: "Billing", icon: DollarSign, path: "/dashboard/parent/billing" }, 
-      { label: "Settings", icon: Settings, path: "/dashboard/parent/settings" }],
+    parent: [{ label: "Home", icon: House, path: "/dashboard" }, 
+      { label: "Book Times", icon: Clock, path: "/dashboard/book-times" }, 
+      { label: "All Sessions", icon: Calendar, path: "/dashboard/all-sessions" }, 
+      { label: "Chats", icon: MessageSquare, path: "/dashboard/chats" }, 
+      { label: "Billing", icon: DollarSign, path: "/dashboard/billing" }, 
+      { label: "Settings", icon: Settings, path: "/dashboard/settings" }],
 
-    tutor: [{ label: "Home", icon: House, path: "/dashboard/tutor" }, 
-      { label: "Availabilities", icon: Clock, path: "/dashboard/tutor/availabilities" }, 
-      { label: "All Sessions", icon: Calendar, path: "/dashboard/tutor/all-sessions" }, 
-      { label: "Chats", icon: MessageSquare, path: "/dashboard/tutor/chats" }, 
-      { label: "Billing", icon: DollarSign, path: "/dashboard/tutor/billing" }, 
-      { label: "Settings", icon: Settings, path: "/dashboard/tutor/settings" }],
+    tutor: [{ label: "Home", icon: House, path: "/dashboard" }, 
+      { label: "Availabilities", icon: Clock, path: "/dashboard/availabilities" }, 
+      { label: "All Sessions", icon: Calendar, path: "/dashboard/all-sessions" }, 
+      { label: "Chats", icon: MessageSquare, path: "/dashboard/chats" }, 
+      { label: "Billing", icon: DollarSign, path: "/dashboard/billing" }, 
+      { label: "Settings", icon: Settings, path: "/dashboard/settings" }],
 
   };
 
@@ -41,12 +41,14 @@ export default function DashboardLayout({userType, profilePicture, name}: Dashbo
       console.error("Logout failed:", error);
     }
   };
+  console.log("Profile picture URL:", profilePicture);
+
 
 return (
     <aside className="w-full md:w-[280px] bg-gradient-to-b from-[#494a4a] to-[#3a3b3b] h-screen md:h-full flex flex-col shadow-xl fixed md:relative z-50">
       {/* Profile Section */}
       <div className="flex flex-col items-center pt-8 pb-6 px-4 border-b border-[#5a5a5a]/30">
-        <img src={profilePicture} alt="Profile" className = "w-20 h-20 rounded-full"/>
+        <img src={profilePicture.trim()} alt="Profile" className = "w-20 h-20 rounded-full"/>
         <h2 className="mt-4 font-medium text-[#fbf8f6] text-lg text-center">
           {name}
         </h2>

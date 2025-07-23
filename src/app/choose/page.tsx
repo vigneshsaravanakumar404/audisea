@@ -25,7 +25,7 @@ export default function ChooseRolePage() {
       if (currentUser?.uid) {
         const userData = await getUserData(currentUser.uid);
         if(userData) {
-          router.replace(`/dashboard/${userData.userType}`);
+          router.replace(`/dashboard`);
         }
       } 
     };
@@ -64,7 +64,7 @@ export default function ChooseRolePage() {
 
     // Redirects to respective role dashboard
     try {
-      router.replace(`/dashboard/${selectedRole}`);
+      router.replace(`/dashboard`);
     } catch (error) {
       console.error("Error saving user data:", error);
     }

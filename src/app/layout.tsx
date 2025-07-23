@@ -5,6 +5,7 @@ import "./globals.css";
 import Navbar from "../components/navbar"
 import { usePathname } from "next/navigation";
 import { AuthProvider } from "./contexts/authContext";
+import { UserProvider } from "./contexts/userContext";
 
 
 
@@ -32,8 +33,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} ${josefinSans.variable} antialiased`}>
         <AuthProvider>
-          {!hideNavbar && <Navbar />}
-          {children}
+          <UserProvider>
+            {!hideNavbar && <Navbar />}
+            {children}
+          </UserProvider>
         </AuthProvider>
       </body>
     </html>
