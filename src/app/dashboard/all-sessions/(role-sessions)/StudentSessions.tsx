@@ -41,7 +41,7 @@ const mockPastSessions = [
   }
 ];
 
-export default function AllSessionsPage() {
+export default function StudentAllSessions() {
   const [selectedUpcomingDate, setSelectedUpcomingDate] = useState<Dayjs>(dayjs());
   const [selectedPastDate, setSelectedPastDate] = useState<Dayjs>(dayjs());
   const [upcomingSessions, setUpcomingSessions] = useState<Session[]>([]); 

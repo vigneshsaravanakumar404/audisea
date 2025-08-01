@@ -5,37 +5,26 @@ import { getUserData, setUserData } from "@/data/firestore/user";
 import { useAuth } from "@/app/contexts/authContext";
 import { useEffect, useState } from "react";
 import { UserInfo } from "@/app/types/user";
+import { useUser } from "@/app/contexts/userContext";
 
 
-export default function StudentHomePage() {
+export default function DashboardPage() {
 
-  const { currentUser } = useAuth();
-  const [user, setUser] = useState<UserInfo | null>(null);
+  const user = useUser();
 
-  useEffect(() => {
-    const userSet = async () => {
-      if (currentUser?.uid) {
-        const userData = await getUserData(currentUser.uid);
-        setUser(userData as UserInfo | null);
-      } else {
-        setUser(null);
-      }
-    };
-    userSet();
-  }, [currentUser]);
 
 
   return (
+    
     <div className="bg-[#fbf8f6] flex justify-center w-full">
       <div className="bg-[#fbf8f6] w-full max-w-[1512px]">
 
         {/* Welcome Header */}
         <header className="w-full h-36 bg-[#6e7d6f] px-[74px] flex items-center">
           <h1 className="font-bold text-[#fbf8f6] text-4xl tracking-tight">
-            Welcome, {user?.name}!
+            Hi, {user?.name}!
           </h1>
         </header>
-
         {/* Main Content */}
         <main className="px-[74px] py-16 space-y-20">
 

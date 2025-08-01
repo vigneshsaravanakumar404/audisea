@@ -1,4 +1,4 @@
-export default function TutorPage() {
+export default function TutorDashboard() {
   return (
     <div>
       <h2>Tutor Home</h2>

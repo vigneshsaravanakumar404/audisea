@@ -6,12 +6,10 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs, { Dayjs } from 'dayjs';
-import { useAuth } from "@/app/contexts/authContext";
-import { UserInfo } from "@/app/types/user";  
-import { getUserData } from "@/data/firestore/user";
+import { useUser } from "@/app/contexts/userContext";
 
-export default function BookTimes () {
-  const { currentUser } = useAuth();
+export default function StudentBookTimes () {
+  const user = useUser();
   const [selectedTutor, setSelectedTutor] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
