@@ -1,54 +1,61 @@
 "use client"
 
 import React, { useState, useEffect } from "react";
-import { Calendar, Clock, User, BookOpen, CheckCircle, ChevronRight, ChevronLeft, X } from "lucide-react";
+import { Calendar, Clock, User, BookOpen, CheckCircle, X } from "lucide-react";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs, { Dayjs } from 'dayjs';
 import { useUser } from "@/app/contexts/userContext";
+import { getStudentTutors } from "@/data/firestore/student";
+import { Tutor } from "@/app/types/user";
 
 export default function StudentBookTimes () {
   const user = useUser();
-  const [selectedTutor, setSelectedTutor] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const [selectedSessions, setSelectedSessions] = useState<Array<{date: string, time: string}>>([]);
+  const [tutors, setTutors] = useState<Tutor[] | null>([]);
+  const [selectedTutor, setSelectedTutor] = useState<Tutor | null>(null);
+  const [subjects, setSubjects] = useState<string[]>([]);
+  const [dates, setDates] = useState<string[]>([]);
+  const [times, setTimes] = useState<string[]>([]);
 
-  // Mock tutor availability data - in real app this would come from API
-  const tutorAvailability = {
-    "tutor1": [
-      "2024-12-15", "2024-12-16", "2024-12-17", "2024-12-18", "2024-12-19",
-      "2024-12-20", "2024-12-21", "2024-12-22", "2024-12-23", "2024-12-24",
-      "2024-12-25", "2024-12-26", "2024-12-27", "2024-12-28", "2024-12-29",
-      "2024-12-30", "2024-12-31"
-    ],
-    "tutor2": [
-      "2024-12-15", "2024-12-17", "2024-12-19", "2024-12-21", "2024-12-23",
-      "2024-12-25", "2024-12-27", "2024-12-29", "2024-12-31"
-    ],
-    "tutor3": [
-      "2024-12-16", "2024-12-18", "2024-12-20", "2024-12-22", "2024-12-24",
-      "2024-12-26", "2024-12-28", "2024-12-30"
-    ],
-    "tutor4": [
-      "2024-12-15", "2024-12-16", "2024-12-17", "2024-12-18", "2024-12-19",
-      "2024-12-20", "2024-12-21", "2024-12-22", "2024-12-23", "2024-12-24",
-      "2024-12-25", "2024-12-26", "2024-12-27", "2024-12-28", "2024-12-29",
-      "2024-12-30", "2024-12-31"
-    ]
-  };
+  useEffect(() => {
+    async function fetchTutors() {
+      if (user) {
+        const tutors = await getStudentTutors(user.uid);
+        setTutors(tutors);
+      }
+    }
+    fetchTutors();
+  }, [user]);
 
-  // Time slot data for mapping
-  const timeSlots = [
-    { id: 1, time: "5:00 PM - 6:00 PM", available: true },
-    { id: 2, time: "6:00 PM - 7:00 PM", available: true },
-    { id: 3, time: "7:00 PM - 8:00 PM", available: true },
-    { id: 4, time: "8:00 PM - 9:00 PM", available: true },
-    { id: 5, time: "9:00 PM - 10:00 PM", available: false },
-    { id: 6, time: "10:00 PM - 11:00 PM", available: false },
-    { id: 7, time: "11:00 PM - 12:00 AM", available: false },
-  ];
+  useEffect(() => {
+    if (selectedTutor) {
+      setSubjects(selectedTutor.subjects);
+      const formattedDates = selectedTutor.datesAvailable.map(dateStr =>
+        formatDate(dayjs(dateStr))
+      );
+      setDates(formattedDates);
+    }
+  }, [selectedTutor]);
+
+  useEffect(() => {
+    if (selectedDate) {
+      const formattedDate = formatDate(selectedDate);
+      console.log("Time slot keys:", Object.keys(selectedTutor?.timeSlots || {}));
+
+
+      const availableTimes = selectedTutor?.timeSlots[formattedDate] || [];
+      setTimes(availableTimes);
+    }
+  }, [selectedDate]);
+
+  useEffect(() => {
+    console.log("Updated times:", times);
+  }, [times]);
+
 
   const formatDate = (date: Dayjs) => {
     return date.format('YYYY-MM-DD');
@@ -57,7 +64,7 @@ export default function StudentBookTimes () {
   const isDateAvailable = (date: Dayjs) => {
     if (!selectedTutor) return false;
     const dateStr = formatDate(date);
-    return tutorAvailability[selectedTutor as keyof typeof tutorAvailability]?.includes(dateStr) || false;
+    return dates?.includes(dateStr) || false;
   };
 
   const handleDateChange = (date: Dayjs | null) => {
@@ -113,7 +120,7 @@ export default function StudentBookTimes () {
     alert(`Sessions booked successfully! You have booked ${bookingData.totalSessions} session${bookingData.totalSessions !== 1 ? 's' : ''}. You will receive a confirmation email shortly.`);
     
     // Reset form
-    setSelectedTutor("");
+    setSelectedTutor(null);
     setSelectedSubject("");
     setSelectedSessions([]);
     setSelectedDate(null);
@@ -121,7 +128,7 @@ export default function StudentBookTimes () {
 
   // Handle form reset
   const handleReset = () => {
-    setSelectedTutor("");
+    setSelectedTutor(null);
     setSelectedSubject("");
     setSelectedSessions([]);
     setSelectedDate(null);
@@ -164,23 +171,26 @@ export default function StudentBookTimes () {
                     </div>
                   </div>
                   <div className="p-8">
-                    <select 
-                      value={selectedTutor}
-                      onChange={(e) => {
-                        setSelectedTutor(e.target.value);
-                        setSelectedSessions([]); // Reset sessions when tutor changes
-                        setSelectedDate(null); // Reset selected date when tutor changes
-                      }}
-                      className="w-full p-4 border-2 border-gray-200 rounded-xl bg-white text-lg font-medium text-[#2f2f2f] focus:outline-none focus:border-[#96aa97] focus:ring-4 focus:ring-[#96aa97]/10 transition-all"
-                      required
-                    >
-                      
-                      <option value="">Choose a tutor...</option>
-                      <option value="tutor1">Dr. Sarah Johnson - Mathematics</option>
-                      <option value="tutor2">Prof. Michael Chen - Physics</option>
-                      <option value="tutor3">Ms. Emily Davis - English Literature</option>
-                      <option value="tutor4">Dr. James Wilson - Chemistry</option>
-                    </select>
+                  <select
+                    value={selectedTutor?.uid || ""}
+                    onChange={(e) => {
+                      const uid = e.target.value;
+                      const tutor = tutors?.find(t => t.uid === uid) || null;
+                      setSelectedTutor(tutor);
+                    }}
+                    className="w-full p-4 border-2 border-gray-200 rounded-xl bg-white text-lg font-medium text-[#2f2f2f] focus:outline-none focus:border-[#96aa97] focus:ring-4 focus:ring-[#96aa97]/10 transition-all"
+                    required
+                  >
+                    <option value="">Select Tutor</option>
+                    {tutors?.map(tutor => (
+                      <option key={tutor.uid} value={tutor.uid}>
+                        {tutor.name}
+                      </option>
+                    ))}
+                  </select>
+
+
+
                   </div>
                 </div>
 
@@ -198,18 +208,18 @@ export default function StudentBookTimes () {
                     </div>
                   </div>
                   <div className="p-8">
-                    <select 
+                    <select
                       value={selectedSubject}
                       onChange={(e) => setSelectedSubject(e.target.value)}
                       className="w-full p-4 border-2 border-gray-200 rounded-xl bg-white text-lg font-medium text-[#2f2f2f] focus:outline-none focus:border-[#96aa97] focus:ring-4 focus:ring-[#96aa97]/10 transition-all"
                       required
                     >
                       <option value="">Select a subject...</option>
-                      <option value="math">Advanced Mathematics</option>
-                      <option value="physics">Physics</option>
-                      <option value="english">English Literature</option>
-                      <option value="chemistry">Chemistry</option>
-                      <option value="biology">Biology</option>
+                      {subjects?.map((subject, index) => (
+                        <option key={index} value={subject}>
+                          {subject}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
@@ -266,9 +276,28 @@ export default function StudentBookTimes () {
                               },
                               '& .MuiPickersDay-root:not(.Mui-disabled)': {
                                 color: '#2f2f2f',
+                                border: '2px solid #96aa97',
+
                                 '&:hover': {
                                   backgroundColor: '#f0f4f0',
                                 },
+                              },
+                              '& .MuiPickersDay-root.MuiDay-today': {
+                                border: 'none !important',
+                                backgroundColor: 'transparent !important',
+                                outline: 'none !important',
+                                boxShadow: 'none !important',
+                                color: '#2f2f2f !important',
+                                '&:before': {
+                                  display: 'none !important',
+                                },
+                                '&:after': {
+                                  display: 'none !important',
+                                },
+                              },
+
+                              '& .MuiPickersDay-today': {
+                                border: 'none !important',
                               },
                               '& .MuiPickersCalendarHeader-root': {
                                 color: '#2f2f2f',
@@ -327,26 +356,20 @@ export default function StudentBookTimes () {
                               </span>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                              {timeSlots.map((slot) => (
+                              {times.map((slot, index) => (
+                                
                                 <button
-                                  key={slot.id}
+                                  key={index}
                                   type="button"
-                                  onClick={() => slot.available && handleSessionToggle(selectedDate?.format('YYYY-MM-DD') || '', slot.time)}
-                                  disabled={!slot.available}
-                                  className={`p-4 rounded-lg border-2 transition-all text-left ${
-                                    !slot.available 
-                                      ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed' 
-                                      : isSessionSelected(selectedDate?.format('YYYY-MM-DD') || '', slot.time)
-                                        ? 'border-[#96aa97] bg-[#f0f4f0] text-[#2f2f2f] shadow-sm' 
-                                        : 'border-gray-200 bg-white text-[#2f2f2f] hover:border-[#96aa97] hover:bg-[#f8faf8]'
-                                  }`}
+                                  onClick={() => handleSessionToggle(selectedDate?.format('YYYY-MM-DD') || '', slot)}
+                                  className="bg-white rounded-xl p-4 border border-[#96aa97] hover:bg-[#f0f4f0] transition"
                                 >
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center space-x-3">
-                                      <Clock className={`w-5 h-5 ${isSessionSelected(selectedDate?.format('YYYY-MM-DD') || '', slot.time) ? 'text-[#96aa97]' : 'text-gray-400'}`} />
-                                      <span className="font-medium text-lg">{slot.time}</span>
+                                      <Clock className={`w-5 h-5 ${isSessionSelected(selectedDate?.format('YYYY-MM-DD') || '', slot) ? 'text-[#96aa97]' : 'text-gray-400'}`} />
+                                      <span className="font-medium text-lg text-black">{slot}</span>
                                     </div>
-                                    {isSessionSelected(selectedDate?.format('YYYY-MM-DD') || '', slot.time) && (
+                                    {isSessionSelected(selectedDate?.format('YYYY-MM-DD') || '', slot) && (
                                       <CheckCircle className="w-5 h-5 text-[#96aa97]" />
                                     )}
                                   </div>
@@ -387,10 +410,7 @@ export default function StudentBookTimes () {
                               <div>
                                 <p className="text-sm text-gray-600">Tutor</p>
                                 <p className="font-medium text-[#2f2f2f]">
-                                  {selectedTutor === "tutor1" && "Dr. Sarah Johnson - Mathematics"}
-                                  {selectedTutor === "tutor2" && "Prof. Michael Chen - Physics"}
-                                  {selectedTutor === "tutor3" && "Ms. Emily Davis - English Literature"}
-                                  {selectedTutor === "tutor4" && "Dr. James Wilson - Chemistry"}
+                                  {selectedTutor.name}
                                 </p>
                               </div>
                             </div>
@@ -401,11 +421,7 @@ export default function StudentBookTimes () {
                               <div>
                                 <p className="text-sm text-gray-600">Subject</p>
                                 <p className="font-medium text-[#2f2f2f]">
-                                  {selectedSubject === "math" && "Advanced Mathematics"}
-                                  {selectedSubject === "physics" && "Physics"}
-                                  {selectedSubject === "english" && "English Literature"}
-                                  {selectedSubject === "chemistry" && "Chemistry"}
-                                  {selectedSubject === "biology" && "Biology"}
+                                  {selectedSubject}
                                 </p>
                               </div>
                             </div>

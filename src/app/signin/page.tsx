@@ -18,7 +18,7 @@ export default function SignInPage() {
       if (currentUser?.uid) {
         const user = await getUserData(currentUser.uid);
         if (user) {
-          router.replace(`/dashboard/${user.userType}`);
+          router.replace(`/dashboard`);
         }
       }
     };
@@ -36,7 +36,7 @@ export default function SignInPage() {
         const result = await doSignInWithGoogle();
         const user = await getUserData(result.user.uid);
         if (user) {
-          router.replace(`/dashboard/${user.userType}`);
+          router.replace(`/dashboard`);
         } else {
           router.replace("/choose");
         }
