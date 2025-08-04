@@ -1,7 +1,11 @@
+import { Student, Tutor } from './user'; 
+
 export interface Session{
-  id: number;
-  date: string;
-  time: string;
-  subject: string;
-  tutor: string;
+  uid: string
+  date: Date
+  studentRef: Student
+  tutorRef: Tutor
+  meetURL: string
+  subject: string
+  description?: string
 };

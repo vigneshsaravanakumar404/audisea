@@ -1,3 +1,5 @@
+import { DocumentReference, Timestamp } from "firebase/firestore";
+
 export interface UserInfo {
   uid: string;
   name: string;
@@ -7,17 +9,21 @@ export interface UserInfo {
 }
 
 export interface Student extends UserInfo {
-  uid: string
-  tutors: Tutor[]
-  parents: Parent[]
+  tutors: DocumentReference[]
+  parents: DocumentReference[]
 }
 
 export interface Tutor extends UserInfo {
-  uid: string
+  subjects: string[];
+  datesAvailable: string[]
+  timeSlots: {
+    [dateString: string]: string[]; // key is formatted date like "2025-08-01"
+  };
+  
 
 }
 
 export interface Parent extends UserInfo {
-  uid: string
+  
   
 }
