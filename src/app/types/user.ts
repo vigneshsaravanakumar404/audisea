@@ -11,6 +11,8 @@ export interface UserInfo {
 export interface Student extends UserInfo {
   tutors: DocumentReference[]
   parents: DocumentReference[]
+  upcomingClassDates: string[]
+  pastClassDates: string[]
 }
 
 export interface Tutor extends UserInfo {

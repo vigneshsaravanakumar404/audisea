@@ -7,7 +7,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs, { Dayjs } from 'dayjs';
 import { useUser } from "@/app/contexts/userContext";
-import { getStudentTutors, getStudentData, getStudentDataRef } from "@/data/firestore/student";
+import { getStudentTutors, getStudentDataRef, addStudentUpcomingDates } from "@/data/firestore/student";
 import { getTutorDataRef } from "@/data/firestore/tutor";
 import { setSessionData } from "@/data/firestore/session";
 import { Tutor } from "@/app/types/user";
@@ -23,8 +23,6 @@ export default function StudentBookTimes () {
   const [selectedTutor, setSelectedTutor] = useState<Tutor | null>(null);
   const [subjects, setSubjects] = useState<string[]>([]);
   const [dates, setDates] = useState<string[]>([]);
-  const [times, setTimes] = useState<string[]>([]);
-  // NEW: start/end custom range inputs
   const [customStart, setCustomStart] = useState("");
   const [customEnd, setCustomEnd] = useState("");
 
@@ -133,9 +131,11 @@ export default function StudentBookTimes () {
 
       const bookingData: Session = {
         uid: "", // or Firestore auto-ID later
-        date: dateTime,
+        date: selectedDate?.format("YYYY-MM-DD") || "",
         startTime: s.time.split(" - ")[0],
         endTime: s.time.split(" - ")[1],
+        student: user.name,
+        tutor: selectedTutor.name,
         studentRef: getStudentDataRef(user.uid),
         tutorRef: getTutorDataRef(selectedTutor.uid),
         meetURL: "",
@@ -146,6 +146,8 @@ export default function StudentBookTimes () {
       console.log("Booking data:", bookingData);
 
       setSessionData(bookingData);
+      addStudentUpcomingDates(user.uid, bookingData.date);
+    
     });
 
 

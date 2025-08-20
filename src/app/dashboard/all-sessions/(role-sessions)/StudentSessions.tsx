@@ -6,63 +6,96 @@ import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs, { Dayjs } from 'dayjs';
 import React, { useState, useEffect } from "react";
 import { Session } from "@/app/types/session";
-
-const mockUpcomingSessions = [
-  {
-    id: 1,
-    date: "2024-12-20",
-    time: "5:00 PM - 6:00 PM",
-    subject: "Mathematics",
-    tutor: "Dr. Sarah Johnson"
-  },
-  {
-    id: 2,
-    date: "2024-12-22",
-    time: "6:00 PM - 7:00 PM",
-    subject: "Physics",
-    tutor: "Prof. Michael Chen"
-  }
-];
-
-const mockPastSessions = [
-  {
-    id: 1,
-    date: "2024-11-10",
-    time: "5:00 PM - 6:00 PM",
-    subject: "English Literature",
-    tutor: "Ms. Emily Davis"
-  },
-  {
-    id: 2,
-    date: "2025-07-03",
-    time: "7:00 PM - 8:00 PM",
-    subject: "Chemistry",
-    tutor: "Dr. James Wilson"
-  }
-];
+import { useUser } from "@/app/contexts/userContext";
+import { getStudentPastDates, getStudentUpcomingDates } from "@/data/firestore/student";
+import { getTutorDataRef } from "@/data/firestore/tutor";
+import { filterSessionsByDate } from "@/data/firestore/session";
+import { Tutor } from "@/app/types/user";
 
 export default function StudentAllSessions() {
-  const [selectedUpcomingDate, setSelectedUpcomingDate] = useState<Dayjs>(dayjs());
-  const [selectedPastDate, setSelectedPastDate] = useState<Dayjs>(dayjs());
+  const user = useUser();
+  const [selectedUpcomingDate, setSelectedUpcomingDate] = useState<Dayjs | null>(null);
+  const [selectedPastDate, setSelectedPastDate] = useState<Dayjs | null>(null);
   const [upcomingSessions, setUpcomingSessions] = useState<Session[]>([]); 
   const [pastSessions, setPastSessions] = useState<Session[]>([]);
+  const [pastDates, setPastDates] = useState<string[]>([]);
+  const [upcomingDates, setUpcomingDates] = useState<string[]>([]);
 
-  const upcomingSessionsFilter = (date: Dayjs) => {
-    const format = date?.format('YYYY-MM-DD');
-    setUpcomingSessions(mockUpcomingSessions.filter(session => session.date === format))
+
+  useEffect(() => {
+    async function fetchDates() {
+      if (user) {
+        const pastDates = await getStudentPastDates(user.uid);
+        setPastDates(pastDates);
+
+        const upcomingDates = await getStudentUpcomingDates(user.uid);
+        setUpcomingDates(upcomingDates);
+      }
+    }
+
+    fetchDates();
+  }, [user]);
+
+  useEffect(() => {
+    async function findUpcoming() {
+      if (user && selectedUpcomingDate) {
+        const upcomingSessions = await filterSessionsByDate(selectedUpcomingDate.format('YYYY-MM-DD'));
+        setUpcomingSessions(upcomingSessions as Session[]);
+        
+      }
+    }
+
+    findUpcoming();
+  }, [selectedUpcomingDate]);
+
+  useEffect(() => {
+    async function findPast() {
+      if (user && selectedPastDate) {
+        const pastSessions = await filterSessionsByDate(selectedPastDate.format('YYYY-MM-DD'));
+        setPastSessions(pastSessions as Session[]);
+        
+      }
+    }
+
+    findPast();
+  }, [selectedPastDate]);
+
+
+    
+  const formatToAmPm = (time24: string) =>
+    time24 ? dayjs(time24, "HH:mm").format("h:mm A") : "";
+
+
+  const formatDate = (date: Dayjs) => {
+    return date.format('YYYY-MM-DD');
+  };
+  
+  const isPastDateAvailable = (date: Dayjs) => {
+    const dateStr = formatDate(date);
+    return pastDates?.includes(dateStr) || false;
+  };
+
+  const isUpcomingDateAvailable = (date: Dayjs) => {
+    const dateStr = formatDate(date);
+    return upcomingDates?.includes(dateStr) || false;
   };
 
   
-  const pastSessionsFilter = (date: Dayjs) => {
-    const format = date?.format('YYYY-MM-DD');
-    setPastSessions(mockPastSessions.filter(session => session.date === format))
+  const handlePastDateChange = (date: Dayjs | null) => {
+    if (date) {
+      if (isPastDateAvailable(date)) {
+        setSelectedPastDate(date);
+      }
+    }
   };
 
-  useEffect(() => {
-    upcomingSessionsFilter(selectedUpcomingDate);
-    pastSessionsFilter(selectedPastDate);
-  }, [selectedUpcomingDate, selectedPastDate]);
-
+  const handleUpcomingDateChange = (date: Dayjs | null) => {
+    if (date) {
+      if (isUpcomingDateAvailable(date)) {
+        setSelectedUpcomingDate(date);
+      }
+    }
+  };
 
 
   return (
@@ -79,69 +112,89 @@ export default function StudentAllSessions() {
         <main className="px-8 py-12 space-y-12">
           {/* Row 1: Upcoming */}
           <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-            {/* Upcoming Calendar */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 flex flex-col items-center w-full">
-              <h2 className="font-semibold text-[#2f2f2f] text-xl mb-4 font-['Josefin_Sans',sans-serif]">Upcoming Sessions Calendar</h2>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateCalendar
-                  value={selectedUpcomingDate}
-                  onChange={(newDate) => {
-                    if (newDate !== null) {
-                      setSelectedUpcomingDate(newDate);
-                    }
-                  }}
-                  sx={{
-                    width: '100%',
-                    minWidth: 320,
-                    maxWidth: 380,
-                    mx: 'auto',
-                    '& .MuiPickersDay-root': {
-                      fontSize: '15px',
-                      fontWeight: 500,
-                      fontFamily: '"Josefin Sans", sans-serif',
-                      borderRadius: '10px',
-                      transition: 'all 0.2s',
-                    },
-                    '& .MuiPickersDay-root.Mui-selected': {
-                      backgroundColor: '#96aa97 !important',
-                      color: 'white !important',
-                      '&:hover': {
-                        backgroundColor: '#86998a !important',
-                      },
-                    },
-                    '& .MuiPickersDay-root.Mui-selected.Mui-focusVisible': {
-                      backgroundColor: '#96aa97 !important',
-                      color: 'white !important',
-                    },
-                    '& .MuiPickersDay-root.Mui-disabled': {
-                      color: '#9ca3af',
-                    },
-                    '& .MuiPickersDay-root:not(.Mui-disabled)': {
-                      color: '#2f2f2f',
-                      '&:hover': {
-                        backgroundColor: '#f0f4f0',
-                      },
-                    },
-                    '& .MuiPickersCalendarHeader-root': {
-                      color: '#2f2f2f',
-                      mb: 2,
-                    },
-                    '& .MuiPickersCalendarHeader-label': {
-                      fontSize: '17px',
-                      fontWeight: 700,
-                      fontFamily: '"Josefin Sans", sans-serif',
-                      letterSpacing: '0.5px',
-                    },
-                    '& .MuiPickersCalendarHeader-switchViewButton': {
-                      color: '#96aa97',
-                    },
-                    '& .MuiPickersSlideTransition-root': {
-                      minHeight: 280,
-                    },
-                  }}
-                />
-              </LocalizationProvider>
-            </div>
+            {/* Calendar View */}
+              <div className="lg:col-span-1">
+                <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DateCalendar
+                      value={selectedUpcomingDate}
+                      onChange={handleUpcomingDateChange}
+                      shouldDisableDate={(date) => {
+                        // Disable dates that are NOT available
+                        return !isUpcomingDateAvailable(date);
+                      }}
+                      sx={{
+                        width: '%',
+                        '& .MuiPickersDay-root': {
+                          fontSize: '14px',
+                          fontWeight: 500,
+                          fontFamily: '"Josefin Sans", sans-serif',
+                        },
+                        '& .MuiPickersDay-root.Mui-selected': {
+                          backgroundColor: '#96aa97 !important',
+                          color: 'white !important',
+                          '&:hover': {
+                            backgroundColor: '#86998a !important',
+                          },
+                        },
+                        '& .MuiPickersDay-root.Mui-selected.Mui-focusVisible': {
+                          backgroundColor: 'transparent !important',
+                          color: 'white !important',
+                        },
+                        '& .MuiPickersDay-root.Mui-disabled': {
+                          color: '#9ca3af',
+                        },
+                        '& .MuiPickersDay-root:not(.Mui-disabled)': {
+                          color: '#2f2f2f',
+                          border: '2px solid #96aa97',
+                          '&:hover': {
+                            backgroundColor: '#f0f4f0',
+                          },
+                        },
+                        '& .MuiPickersDay-root.MuiDay-today': {
+                          border: 'none !important',
+                          backgroundColor: 'transparent !important',
+                          outline: 'none !important',
+                          boxShadow: 'none !important',
+                          color: '#2f2f2f !important',
+                          '&:before': { display: 'none !important' },
+                          '&:after': { display: 'none !important' },
+                        },
+                        '& .MuiPickersDay-today': {
+                          border: 'none !important',
+                          backgroundColor: 'transparent !important',
+                        },
+                        '& .MuiPickersCalendarHeader-root': {
+                          color: '#2f2f2f',
+                        },
+                        '& .MuiPickersCalendarHeader-label': {
+                          fontSize: '15px',
+                          fontWeight: 600,
+                          fontFamily: '"Josefin Sans", sans-serif',
+                        },
+                        '& .MuiPickersCalendarHeader-switchViewButton': {
+                          color: '#96aa97',
+                        },
+                      }}
+                    />
+                  </LocalizationProvider>
+
+                  {/* Legend */}
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="flex items-center space-x-4 text-xs">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-[#96aa97] rounded border-2 border-[#96aa97]"></div>
+                        <span className="text-gray-600">Available</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-gray-50 rounded border-2 border-gray-200"></div>
+                        <span className="text-gray-600">Unavailable</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            
             {/* Upcoming Sessions Card */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden flex flex-col justify-between h-full">
               <div className="bg-gradient-to-r from-[#f8faf8] to-[#f0f4f0] px-8 py-6 border-b border-gray-100">
@@ -166,12 +219,12 @@ export default function StudentAllSessions() {
                   </div>
                 ) : (
                   upcomingSessions.map(session => (
-                    <div key={session.id} className="flex items-center justify-between bg-[#f8faf8] rounded-xl p-5 border border-gray-200 shadow-sm">
+                    <div key={session.uid} className="flex items-center justify-between bg-[#f8faf8] rounded-xl p-5 border border-gray-200 shadow-sm">
                       <div className="flex items-center gap-4">
                         <Calendar className="w-6 h-6 text-[#96aa97]" />
                         <div>
                           <div className="font-semibold text-[#2f2f2f] text-lg">{dayjs(session.date).format('ddd, MMM D')}</div>
-                          <div className="text-gray-600 text-sm">{session.time}</div>
+                          <div className="text-gray-600 text-sm">{session.startTime} - {session.endTime}</div>
                         </div>
                       </div>
                       <div className="flex flex-col items-end gap-1">
@@ -194,67 +247,85 @@ export default function StudentAllSessions() {
           {/* Row 2: Past */}
           <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
             {/* Past Calendar */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 flex flex-col items-center w-full">
-              <h2 className="font-semibold text-[#2f2f2f] text-xl mb-4 font-['Josefin_Sans',sans-serif]">Past Sessions Calendar</h2>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateCalendar
-                  value={selectedPastDate}
-                  onChange={(newDate) => {
-                    if (newDate !== null) {
-                      setSelectedPastDate(newDate);
-                    }
-                  }}
-                  sx={{
-                    width: '100%',
-                    minWidth: 320,
-                    maxWidth: 380,
-                    mx: 'auto',
-                    '& .MuiPickersDay-root': {
-                      fontSize: '15px',
-                      fontWeight: 500,
-                      fontFamily: '"Josefin Sans", sans-serif',
-                      borderRadius: '10px',
-                      transition: 'all 0.2s',
-                    },
-                    '& .MuiPickersDay-root.Mui-selected': {
-                      backgroundColor: '#96aa97 !important',
-                      color: 'white !important',
-                      '&:hover': {
-                        backgroundColor: '#86998a !important',
+            <div className="lg:col-span-1">
+              <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DateCalendar
+                    value={selectedPastDate}
+                    onChange={handlePastDateChange}
+                    shouldDisableDate={(date) => {
+                      // Disable dates that are NOT available
+                      return !isPastDateAvailable(date);
+                    }}
+                    sx={{
+                      width: '%',
+                      '& .MuiPickersDay-root': {
+                        fontSize: '14px',
+                        fontWeight: 500,
+                        fontFamily: '"Josefin Sans", sans-serif',
                       },
-                    },
-                    '& .MuiPickersDay-root.Mui-selected.Mui-focusVisible': {
-                      backgroundColor: '#96aa97 !important',
-                      color: 'white !important',
-                    },
-                    '& .MuiPickersDay-root.Mui-disabled': {
-                      color: '#9ca3af',
-                    },
-                    '& .MuiPickersDay-root:not(.Mui-disabled)': {
-                      color: '#2f2f2f',
-                      '&:hover': {
-                        backgroundColor: '#f0f4f0',
+                      '& .MuiPickersDay-root.Mui-selected': {
+                        backgroundColor: '#96aa97 !important',
+                        color: 'white !important',
+                        '&:hover': {
+                          backgroundColor: '#86998a !important',
+                        },
                       },
-                    },
-                    '& .MuiPickersCalendarHeader-root': {
-                      color: '#2f2f2f',
-                      mb: 2,
-                    },
-                    '& .MuiPickersCalendarHeader-label': {
-                      fontSize: '17px',
-                      fontWeight: 700,
-                      fontFamily: '"Josefin Sans", sans-serif',
-                      letterSpacing: '0.5px',
-                    },
-                    '& .MuiPickersCalendarHeader-switchViewButton': {
-                      color: '#96aa97',
-                    },
-                    '& .MuiPickersSlideTransition-root': {
-                      minHeight: 280,
-                    },
-                  }}
-                />
-              </LocalizationProvider>
+                      '& .MuiPickersDay-root.Mui-selected.Mui-focusVisible': {
+                        backgroundColor: '#96aa97 !important',
+                        color: 'white !important',
+                      },
+                      '& .MuiPickersDay-root.Mui-disabled': {
+                        color: '#9ca3af',
+                      },
+                      '& .MuiPickersDay-root:not(.Mui-disabled)': {
+                        color: '#2f2f2f',
+                        border: '2px solid #96aa97',
+                        '&:hover': {
+                          backgroundColor: '#f0f4f0',
+                        },
+                      },
+                      '& .MuiPickersDay-root.MuiDay-today': {
+                        border: 'none !important',
+                        backgroundColor: 'transparent !important',
+                        outline: 'none !important',
+                        boxShadow: 'none !important',
+                        color: '#2f2f2f !important',
+                        '&:before': { display: 'none !important' },
+                        '&:after': { display: 'none !important' },
+                      },
+                      '& .MuiPickersDay-today': {
+                        border: 'none !important',
+                      },
+                      '& .MuiPickersCalendarHeader-root': {
+                        color: '#2f2f2f',
+                      },
+                      '& .MuiPickersCalendarHeader-label': {
+                        fontSize: '15px',
+                        fontWeight: 600,
+                        fontFamily: '"Josefin Sans", sans-serif',
+                      },
+                      '& .MuiPickersCalendarHeader-switchViewButton': {
+                        color: '#96aa97',
+                      },
+                    }}
+                  />
+                </LocalizationProvider>
+
+                {/* Legend */}
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <div className="flex items-center space-x-4 text-xs">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-[#96aa97] rounded border-2 border-[#96aa97]"></div>
+                      <span className="text-gray-600">Available</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-gray-50 rounded border-2 border-gray-200"></div>
+                      <span className="text-gray-600">Unavailable</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             {/* Past Sessions Card */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden flex flex-col justify-between h-full">
@@ -280,12 +351,12 @@ export default function StudentAllSessions() {
                   </div>
                 ) : (
                   pastSessions.map(session => (
-                    <div key={session.id} className="flex items-center justify-between bg-[#f8faf8] rounded-xl p-5 border border-gray-200 shadow-sm">
+                    <div key={session.uid} className="flex items-center justify-between bg-[#f8faf8] rounded-xl p-5 border border-gray-200 shadow-sm">
                       <div className="flex items-center gap-4">
                         <Clock className="w-6 h-6 text-[#96aa97]" />
                         <div>
                           <div className="font-semibold text-[#2f2f2f] text-lg">{dayjs(session.date).format('ddd, MMM D')}</div>
-                          <div className="text-gray-600 text-sm">{session.time}</div>
+                          <div className="text-gray-600 text-sm">{session.startTime } - {session.endTime}</div>
                         </div>
                       </div>
                       <div className="flex flex-col items-end gap-1">
