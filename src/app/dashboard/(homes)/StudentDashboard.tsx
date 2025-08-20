@@ -220,9 +220,9 @@ export default function DashboardPage() {
 
                     {/* Right: Past session action */}
                     <div>
-                      {session.summaryURL ? (
+                      {session.description ? (
                         <a
-                          href={session.summaryURL}
+                          href={session.description}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-block bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium px-4 py-2 rounded-md transition"
