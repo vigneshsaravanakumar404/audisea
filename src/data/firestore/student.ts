@@ -13,6 +13,9 @@ export async function getStudentData(uid: string) {
   const userSnap = await getDoc(userRef);
   return userSnap.data();
 }
+export function getStudentDataRef(uid: string) {
+  return doc(db, "students", uid);
+}
 
 export async function getStudentTutors(uid: string) {
   const userRef = doc(db, "students", uid);

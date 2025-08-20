@@ -17,7 +17,7 @@ export interface Tutor extends UserInfo {
   subjects: string[];
   datesAvailable: string[]
   timeSlots: {
-    [dateString: string]: string[]; // key is formatted date like "2025-08-01"
+    [dateString: string]: string; // key is formatted date like "2025-08-01"
   };
   
 

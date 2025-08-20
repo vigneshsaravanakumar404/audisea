@@ -7,8 +7,12 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs, { Dayjs } from 'dayjs';
 import { useUser } from "@/app/contexts/userContext";
-import { getStudentTutors } from "@/data/firestore/student";
+import { getStudentTutors, getStudentData, getStudentDataRef } from "@/data/firestore/student";
+import { getTutorDataRef } from "@/data/firestore/tutor";
+import { setSessionData } from "@/data/firestore/session";
 import { Tutor } from "@/app/types/user";
+import { v4 as uuidv4 } from "uuid"; 
+import { Session } from "@/app/types/session";
 
 export default function StudentBookTimes () {
   const user = useUser();
@@ -20,6 +24,41 @@ export default function StudentBookTimes () {
   const [subjects, setSubjects] = useState<string[]>([]);
   const [dates, setDates] = useState<string[]>([]);
   const [times, setTimes] = useState<string[]>([]);
+  // NEW: start/end custom range inputs
+  const [customStart, setCustomStart] = useState("");
+  const [customEnd, setCustomEnd] = useState("");
+
+  const formatToAmPm = (time24: string) =>
+    time24 ? dayjs(time24, "HH:mm").format("h:mm A") : "";
+
+  // NEW: add/toggle custom range into selectedSessions
+  const handleCustomTimeSubmit = () => {
+    if (!selectedDate) {
+      alert("Please select a date first.");
+      return;
+    }
+    if (!customStart || !customEnd) return;
+
+    if (customStart >= customEnd) {
+      alert("End time must be later than start time.");
+      return;
+    }
+
+    const dateStr = selectedDate.format("YYYY-MM-DD");
+    const customRange = `${formatToAmPm(customStart)} - ${formatToAmPm(customEnd)}`;
+
+
+    setSelectedSessions(prev => {
+      const exists = prev.some(s => s.date === dateStr && s.time === customRange);
+      return exists
+        ? prev.filter(s => !(s.date === dateStr && s.time === customRange))
+        : [...prev, { date: dateStr, time: customRange }];
+    });
+
+    // reset inputs
+    setCustomStart("");
+    setCustomEnd("");
+  };
 
   useEffect(() => {
     async function fetchTutors() {
@@ -41,22 +80,6 @@ export default function StudentBookTimes () {
     }
   }, [selectedTutor]);
 
-  useEffect(() => {
-    if (selectedDate) {
-      const formattedDate = formatDate(selectedDate);
-      console.log("Time slot keys:", Object.keys(selectedTutor?.timeSlots || {}));
-
-
-      const availableTimes = selectedTutor?.timeSlots[formattedDate] || [];
-      setTimes(availableTimes);
-    }
-  }, [selectedDate]);
-
-  useEffect(() => {
-    console.log("Updated times:", times);
-  }, [times]);
-
-
   const formatDate = (date: Dayjs) => {
     return date.format('YYYY-MM-DD');
   };
@@ -69,7 +92,6 @@ export default function StudentBookTimes () {
 
   const handleDateChange = (date: Dayjs | null) => {
     if (date) {
-      // Allow selection if date is available, or if no tutor is selected yet
       if (isDateAvailable(date) || !selectedTutor) {
         setSelectedDate(date);
       }
@@ -89,10 +111,6 @@ export default function StudentBookTimes () {
     });
   };
 
-  // Check if a specific session is selected
-  const isSessionSelected = (date: string, time: string) => {
-    return selectedSessions.some(session => session.date === date && session.time === time);
-  };
 
   // Get sessions for a specific date
   const getSessionsForDate = (date: string) => {
@@ -102,29 +120,42 @@ export default function StudentBookTimes () {
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    if (!user) return;
+
     if (!selectedTutor || !selectedSubject || selectedSessions.length === 0) {
       alert("Please fill in all required fields and select at least one session.");
       return;
     }
 
-    // Here you would typically send the data to your backend
-    const bookingData = {
-      tutor: selectedTutor,
-      subject: selectedSubject,
-      sessions: selectedSessions,
-      totalSessions: selectedSessions.length
-    };
+    selectedSessions.map((s) => {
+      const dateTime = new Date(`${s.date} ${s.time.split(" - ")[0]}`);
 
-    console.log("Booking data:", bookingData);
-    alert(`Sessions booked successfully! You have booked ${bookingData.totalSessions} session${bookingData.totalSessions !== 1 ? 's' : ''}. You will receive a confirmation email shortly.`);
-    
+      const bookingData: Session = {
+        uid: "", // or Firestore auto-ID later
+        date: dateTime,
+        startTime: s.time.split(" - ")[0],
+        endTime: s.time.split(" - ")[1],
+        studentRef: getStudentDataRef(user.uid),
+        tutorRef: getTutorDataRef(selectedTutor.uid),
+        meetURL: "",
+        subject: selectedSubject,
+        description: `Nothing Updated`,
+      };
+
+      console.log("Booking data:", bookingData);
+
+      setSessionData(bookingData);
+    });
+
+
     // Reset form
     setSelectedTutor(null);
     setSelectedSubject("");
     setSelectedSessions([]);
     setSelectedDate(null);
   };
+
 
   // Handle form reset
   const handleReset = () => {
@@ -152,7 +183,6 @@ export default function StudentBookTimes () {
         <main className="px-8 py-12">
           <div className="max-w-6xl mx-auto space-y-12">
 
-
             <form onSubmit={handleSubmit} className="space-y-12">
 
               {/* Tutor & Subject Selection */}
@@ -171,26 +201,23 @@ export default function StudentBookTimes () {
                     </div>
                   </div>
                   <div className="p-8">
-                  <select
-                    value={selectedTutor?.uid || ""}
-                    onChange={(e) => {
-                      const uid = e.target.value;
-                      const tutor = tutors?.find(t => t.uid === uid) || null;
-                      setSelectedTutor(tutor);
-                    }}
-                    className="w-full p-4 border-2 border-gray-200 rounded-xl bg-white text-lg font-medium text-[#2f2f2f] focus:outline-none focus:border-[#96aa97] focus:ring-4 focus:ring-[#96aa97]/10 transition-all"
-                    required
-                  >
-                    <option value="">Select Tutor</option>
-                    {tutors?.map(tutor => (
-                      <option key={tutor.uid} value={tutor.uid}>
-                        {tutor.name}
-                      </option>
-                    ))}
-                  </select>
-
-
-
+                    <select
+                      value={selectedTutor?.uid || ""}
+                      onChange={(e) => {
+                        const uid = e.target.value;
+                        const tutor = tutors?.find(t => t.uid === uid) || null;
+                        setSelectedTutor(tutor);
+                      }}
+                      className="w-full p-4 border-2 border-gray-200 rounded-xl bg-white text-lg font-medium text-[#2f2f2f] focus:outline-none focus:border-[#96aa97] focus:ring-4 focus:ring-[#96aa97]/10 transition-all"
+                      required
+                    >
+                      <option value="">Select Tutor</option>
+                      {tutors?.map(tutor => (
+                        <option key={tutor.uid} value={tutor.uid}>
+                          {tutor.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
@@ -277,7 +304,6 @@ export default function StudentBookTimes () {
                               '& .MuiPickersDay-root:not(.Mui-disabled)': {
                                 color: '#2f2f2f',
                                 border: '2px solid #96aa97',
-
                                 '&:hover': {
                                   backgroundColor: '#f0f4f0',
                                 },
@@ -288,14 +314,9 @@ export default function StudentBookTimes () {
                                 outline: 'none !important',
                                 boxShadow: 'none !important',
                                 color: '#2f2f2f !important',
-                                '&:before': {
-                                  display: 'none !important',
-                                },
-                                '&:after': {
-                                  display: 'none !important',
-                                },
+                                '&:before': { display: 'none !important' },
+                                '&:after': { display: 'none !important' },
                               },
-
                               '& .MuiPickersDay-today': {
                                 border: 'none !important',
                               },
@@ -306,7 +327,6 @@ export default function StudentBookTimes () {
                                 fontSize: '15px',
                                 fontWeight: 600,
                                 fontFamily: '"Josefin Sans", sans-serif',
-
                               },
                               '& .MuiPickersCalendarHeader-switchViewButton': {
                                 color: '#96aa97',
@@ -333,53 +353,76 @@ export default function StudentBookTimes () {
 
                     {/* Session Selection */}
                     <div className="lg:col-span-2">
-                      <h3 className="text-lg font-semibold text-[#2f2f2f] mb-4">Available Sessions</h3>
+                      <h3 className="text-lg font-semibold text-[#2f2f2f] mb-4">Choose Your Sessions</h3>
+
                       {!selectedTutor ? (
                         <div className="bg-gray-50 rounded-xl p-8 text-center border border-gray-200">
                           <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                          <p className="text-gray-600 font-medium">Please select a tutor first to view available sessions</p>
+                          <p className="text-gray-600 font-medium">
+                            Please select a tutor first to view available sessions
+                          </p>
                         </div>
                       ) : !selectedDate ? (
                         <div className="bg-gray-50 rounded-xl p-8 text-center border border-gray-200">
                           <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                          <p className="text-gray-600 font-medium">Please select a date from the calendar to view available time slots</p>
+                          <p className="text-gray-600 font-medium">
+                            Please select a date from the calendar to view available time slots
+                          </p>
                         </div>
                       ) : (
                         <div className="space-y-4">
                           <div className="bg-[#f0f4f0] rounded-xl p-4 border border-[#96aa97]">
                             <div className="flex items-center justify-between mb-4">
                               <h4 className="font-semibold text-[#2f2f2f] text-lg">
-                                {selectedDate?.format('dddd, MMMM D, YYYY')}
+                                {selectedDate?.format("dddd, MMMM D, YYYY")}
                               </h4>
                               <span className="text-sm text-gray-600">
-                                {getSessionsForDate(selectedDate?.format('YYYY-MM-DD') || '').length} selected
+                                {getSessionsForDate(selectedDate?.format("YYYY-MM-DD") || "").length}{" "}
+                                selected
                               </span>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                              {times.map((slot, index) => (
-                                
-                                <button
-                                  key={index}
-                                  type="button"
-                                  onClick={() => handleSessionToggle(selectedDate?.format('YYYY-MM-DD') || '', slot)}
-                                  className="bg-white rounded-xl p-4 border border-[#96aa97] hover:bg-[#f0f4f0] transition"
-                                >
-                                  <div className="flex items-center justify-between">
-                                    <div className="flex items-center space-x-3">
-                                      <Clock className={`w-5 h-5 ${isSessionSelected(selectedDate?.format('YYYY-MM-DD') || '', slot) ? 'text-[#96aa97]' : 'text-gray-400'}`} />
-                                      <span className="font-medium text-lg text-black">{slot}</span>
-                                    </div>
-                                    {isSessionSelected(selectedDate?.format('YYYY-MM-DD') || '', slot) && (
-                                      <CheckCircle className="w-5 h-5 text-[#96aa97]" />
-                                    )}
-                                  </div>
-                                </button>
-                              ))}
+
+                            <div className="mb-3">
+                              <p className="text-sm text-gray-700">
+                                <span className="font-medium">Tutor says:</span>{" "}
+                                {selectedTutor.timeSlots[selectedDate?.format("YYYY-MM-DD") || ""]}
+                              </p>
                             </div>
+
+                            {/* Custom time input (start → end) */}
+                            <div className="mt-6">
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Suggest a custom time
+                              </label>
+                              <div className="flex flex-col sm:flex-row gap-3">
+                                <input
+                                  type="time"
+                                  className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 text-black focus:outline-none"
+                                  value={customStart}
+                                  onChange={(e) => setCustomStart(e.target.value)}
+                                />
+                                <span className="self-center text-gray-600 font-medium">to</span>
+                                <input
+                                  type="time"
+                                  className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 text-black focus:outline-none"
+                                  value={customEnd}
+                                  onChange={(e) => setCustomEnd(e.target.value)}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={handleCustomTimeSubmit}
+                                  className="rounded-lg bg-green-600 text-white px-4 py-2 text-sm font-medium hover:bg-green-700"
+                                >
+                                  Add
+                                </button>
+                              </div>
+                            </div>
+
                           </div>
                         </div>
                       )}
                     </div>
+
                   </div>
                 </div>
               </div>
@@ -472,10 +515,7 @@ export default function StudentBookTimes () {
                             <p className="font-semibold text-lg">Ready to Book!</p>
                             <p className="text-[#e8f0e9] text-sm">
                               {selectedSessions.length} session{selectedSessions.length !== 1 ? 's' : ''} with {
-                                selectedTutor === "tutor1" && "Dr. Sarah Johnson"
-                                || selectedTutor === "tutor2" && "Prof. Michael Chen"
-                                || selectedTutor === "tutor3" && "Ms. Emily Davis"
-                                || selectedTutor === "tutor4" && "Dr. James Wilson"
+                                selectedTutor!.name
                               }
                             </p>
                           </div>

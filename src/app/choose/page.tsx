@@ -53,7 +53,7 @@ export default function ChooseRolePage() {
     // Creates new student document
     if(selectedRole === "student")
     {
-      await setStudentData(currentUser.uid, { uid: currentUser.uid, tutors: [], parents: [] });
+      await setStudentData(currentUser.uid, { uid: currentUser.uid, name: currentUser.displayName || "", email: currentUser.email || "", photoURL: currentUser.photoURL || "", tutors: [], parents: [] });
     }
 
     // Creates new parent document
