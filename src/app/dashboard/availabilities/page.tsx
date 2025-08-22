@@ -311,9 +311,9 @@ const AvailabilityScheduler = () => {
     return (
         <div className="bg-[#fbf8f6] min-h-screen">
             <div className="max-w-7xl mx-auto">
-                {/* Professional Header */}
-                <header className="w-full h-36 bg-[#6e7d6f] px-[74px] flex items-center">
-                    <h1 className="font-bold text-[#fbf8f6] text-4xl tracking-tight">
+                {/* Compact Header */}
+                <header className="w-full bg-[#6e7d6f] px-8 py-6">
+                    <h1 className="font-bold text-[#fbf8f6] text-3xl tracking-tight">
                         Manage Your Availability
                     </h1>
                 </header>
@@ -329,48 +329,45 @@ const AvailabilityScheduler = () => {
                                     <div className="w-12 h-12 bg-[#96aa97] rounded-xl flex items-center justify-center shadow-sm">
                                         <Calendar className="w-6 h-6 text-white" />
                                     </div>
-                                    <div>
+                                    <div className="flex-1">
                                         <h2 className="text-xl font-bold text-[#2f2f2f]">Select Available Dates</h2>
                                         <p className="text-gray-600 text-sm">Choose when you're available for tutoring sessions</p>
+                                    </div>
+
+                                    {/* Month Navigation */}
+                                    <div className="flex items-center space-x-3">
+                                        <button
+                                            onClick={goToPreviousMonth}
+                                            className="p-2 hover:bg-white/50 rounded-lg transition-colors"
+                                        >
+                                            <svg className="w-5 h-5 text-[#2f2f2f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                            </svg>
+                                        </button>
+                                        <span className="text-lg font-semibold text-[#2f2f2f] min-w-[100px] text-center">
+                                            {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                                        </span>
+                                        <button
+                                            onClick={goToNextMonth}
+                                            className="p-2 hover:bg-white/50 rounded-lg transition-colors"
+                                        >
+                                            <svg className="w-5 h-5 text-[#2f2f2f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="p-8">
-                                <div className="bg-white border border-gray-200 rounded-xl p-6 max-w-md">
-                                    {/* Month Navigation */}
-                                    <div className="flex items-center justify-between px-4 py-4 mb-4">
-                                        <button
-                                            onClick={goToPreviousMonth}
-                                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                                        >
-                                            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                            </svg>
-                                        </button>
-                                        <span className="text-xl font-semibold text-[#2f2f2f]">
-                                            {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                                        </span>
-                                        <button
-                                            onClick={goToNextMonth}
-                                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                                        >
-                                            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                            </svg>
-                                        </button>
-                                    </div>
-
-                                    {/* Divider */}
-                                    <div className="mx-4 border-t border-gray-200 mb-4"></div>
-
+                                <div className="max-w-3xl mx-auto">
                                     {/* Calendar Grid */}
-                                    <div className="px-4">
+                                    <div className="bg-gray-50 rounded-xl p-6">
                                         {/* Day Headers */}
-                                        <div className="grid grid-cols-7 gap-1 mb-3">
+                                        <div className="grid grid-cols-7 gap-1 mb-4">
                                             {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => (
                                                 <div key={index} className="text-center py-2">
-                                                    <span className="text-xs font-medium uppercase tracking-tight text-gray-500">
+                                                    <span className="text-sm font-medium uppercase tracking-tight text-gray-800">
                                                         {day}
                                                     </span>
                                                 </div>
@@ -390,15 +387,15 @@ const AvailabilityScheduler = () => {
                                                         key={index}
                                                         onClick={() => handleDateSelect(date.getDate())}
                                                         className={`
-                                                            h-10 flex items-center justify-center rounded-lg text-sm font-medium
+                                                            h-12 flex items-center justify-center rounded-lg text-sm font-medium
                                                             transition-all duration-200 relative
                                                             ${!isCurrentMonth
                                                                 ? 'text-gray-300'
                                                                 : isSelected
                                                                     ? 'bg-[#96aa97] text-white shadow-md'
                                                                     : isAvailable
-                                                                        ? 'bg-[#e8f5e8] text-[#2f2f2f] border-2 border-[#96aa97]'
-                                                                        : 'text-[#2f2f2f] hover:bg-[#f0f4f0] hover:border-2 hover:border-[#96aa97]'
+                                                                        ? 'bg-[#e8f5e8] text-gray-900 border-2 border-[#96aa97]'
+                                                                        : 'text-gray-900 hover:bg-[#f0f4f0] hover:border-2 hover:border-[#96aa97]'
                                                             }
                                                         `}
                                                     >
@@ -433,21 +430,21 @@ const AvailabilityScheduler = () => {
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                     {/* Time Ranges Management */}
                                     <div>
-                                        <h3 className="text-lg font-semibold text-[#2f2f2f] mb-6">Time Ranges for Selected Date</h3>
+                                        <h3 className="text-lg font-semibold text-gray-900 mb-6">Time Ranges for Selected Date</h3>
 
                                         {/* Add New Time Range */}
                                         <div className="bg-[#f8faf8] rounded-xl p-4 border border-gray-200 mb-6">
-                                            <h4 className="font-medium text-[#2f2f2f] mb-3">Add New Time Range</h4>
+                                            <h4 className="font-medium text-gray-900 mb-3">Add New Time Range</h4>
                                             <div className="flex space-x-3 mb-3">
                                                 <div className="flex-1">
                                                     <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
                                                     <select
                                                         value={newTimeRange.start}
                                                         onChange={(e) => setNewTimeRange(prev => ({ ...prev, start: e.target.value }))}
-                                                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#96aa97] focus:border-[#96aa97]"
+                                                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#96aa97] focus:border-[#96aa97] bg-white text-gray-900"
                                                     >
                                                         {timeOptions.map(time => (
-                                                            <option key={time} value={time}>{time}</option>
+                                                            <option key={time} value={time} className="text-gray-900 bg-white">{time}</option>
                                                         ))}
                                                     </select>
                                                 </div>
@@ -456,10 +453,10 @@ const AvailabilityScheduler = () => {
                                                     <select
                                                         value={newTimeRange.end}
                                                         onChange={(e) => setNewTimeRange(prev => ({ ...prev, end: e.target.value }))}
-                                                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#96aa97] focus:border-[#96aa97]"
+                                                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#96aa97] focus:border-[#96aa97] bg-white text-gray-900"
                                                     >
                                                         {timeOptions.map(time => (
-                                                            <option key={time} value={time}>{time}</option>
+                                                            <option key={time} value={time} className="text-gray-900 bg-white">{time}</option>
                                                         ))}
                                                     </select>
                                                 </div>
@@ -482,7 +479,7 @@ const AvailabilityScheduler = () => {
                                                     >
                                                         <div className="flex items-center space-x-3">
                                                             <Clock className="w-5 h-5 text-[#96aa97]" />
-                                                            <span className="text-base font-medium text-[#2f2f2f]">
+                                                            <span className="text-base font-medium text-gray-900">
                                                                 {range}
                                                             </span>
                                                         </div>
@@ -506,19 +503,19 @@ const AvailabilityScheduler = () => {
 
                                     {/* Summary and Actions */}
                                     <div>
-                                        <h3 className="text-lg font-semibold text-[#2f2f2f] mb-6">Summary</h3>
+                                        <h3 className="text-lg font-semibold text-gray-900 mb-6">Summary</h3>
 
                                         {/* Time Ranges Count */}
                                         <div className="bg-[#f0f4f0] rounded-xl p-6 border border-[#96aa97] mb-6">
                                             <div className="flex items-center justify-between mb-4">
                                                 <div className="flex items-center space-x-3">
                                                     <CheckCircle className="w-6 h-6 text-[#96aa97]" />
-                                                    <span className="text-lg font-semibold text-[#2f2f2f]">
+                                                    <span className="text-lg font-semibold text-gray-900">
                                                         {getSelectedCount()} time range{getSelectedCount() !== 1 ? 's' : ''} set
                                                     </span>
                                                 </div>
                                             </div>
-                                            <p className="text-gray-600 text-sm">
+                                            <p className="text-gray-700 text-sm">
                                                 You have {getSelectedCount()} time range{getSelectedCount() !== 1 ? 's' : ''} configured for {selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                                             </p>
                                         </div>
@@ -526,7 +523,7 @@ const AvailabilityScheduler = () => {
                                         {/* Database Info */}
                                         {availableDates.length > 0 && (
                                             <div className="bg-blue-50 rounded-xl p-4 border border-blue-200 mb-6">
-                                                <h4 className="font-medium text-blue-800 mb-2">Database Status</h4>
+                                                <h4 className="font-medium text-blue-800 mb-2">Status</h4>
                                                 <p className="text-blue-700 text-sm">
                                                     You have {availableDates.length} date{availableDates.length !== 1 ? 's' : ''} marked as available in your profile
                                                 </p>
