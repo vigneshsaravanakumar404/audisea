@@ -25,6 +25,6 @@ export async function filterSessionsByDate(date: string) {
     ...doc.data()
   }));
 
-  // Direct string comparison since you store dates as strings
+  
   return sessions.filter(session => session.date === date);
 }
