@@ -7,6 +7,7 @@ import { useUser } from "@/app/contexts/userContext";
 import { getStudentUpcomingDates, getStudentPastDates,getStudentTutors } from "@/data/firestore/student";
 import { filterSessionsByDate } from "@/data/firestore/session";
 import { Session } from "@/app/types/session";
+import dayjs from "dayjs";
 
 
 export default function DashboardPage() {
@@ -42,7 +43,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchUpcomingSessions = async () => {
       const sortedDates = [...upcomingDates].sort(
-        (a, b) => new Date(b).getTime() - new Date(a).getTime()
+        (a, b) => dayjs(a).valueOf() - dayjs(b).valueOf()
       );
 
       if (sortedDates.length > 0) {
@@ -66,7 +67,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchPastSessions = async () => {
       const sortedDates = [...pastDates].sort(
-        (a, b) => new Date(b).getTime() - new Date(a).getTime()
+        (a, b) => dayjs(b).valueOf() - dayjs(a).valueOf()
       );
 
       if (sortedDates.length > 0) {
@@ -149,11 +150,7 @@ export default function DashboardPage() {
                                 <svg className="w-4 h-4 text-[#96aa97]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
-                                <span>{new Date(session.date).toLocaleDateString(undefined, {
-                                  weekday: "long",
-                                  month: "long",
-                                  day: "numeric",
-                                })}</span>
+                                <span>{dayjs(session.date).format('dddd, MMMM D, YYYY')}</span>
                               </div>
                             </div>
                           </div>
@@ -162,10 +159,7 @@ export default function DashboardPage() {
                         {/* Right side - Date Badge and Meeting Link */}
                         <div className="flex items-center space-x-4">
                           <div className="bg-[#96aa97] text-white text-sm font-semibold px-4 py-2 rounded-full">
-                            {new Date(session.date).toLocaleDateString(undefined, {
-                              month: "short",
-                              day: "numeric",
-                            })}
+                            {dayjs(session.date).format('MMM D')}
                           </div>
                           
                           {session.meetURL ? (
@@ -243,10 +237,7 @@ export default function DashboardPage() {
 
                     {/* Middle: Date + Time */}
                     <div className="text-gray-700 text-sm">
-                      {new Date(session.date).toLocaleDateString(undefined, {
-                        month: "short",
-                        day: "numeric",
-                      })}{" "}
+                      {dayjs(session.date).format('MMM D')}{" "}
                       · {session.startTime} - {session.endTime}
                     </div>
 

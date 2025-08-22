@@ -497,7 +497,7 @@ export default function StudentBookTimes() {
                                                                     
                                                                     return (
                                                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                                                            {Array.isArray(timeSlots) ? timeSlots.map((slot: string, index: number) => {
+                                                                            {timeSlots.map((slot: string, index: number) => {
                                                                                 // Convert 24-hour format to 12-hour format
                                                                                 const [start, end] = slot.split('-');
                                                                                 const formatToAmPm = (time24: string) => {
@@ -532,32 +532,7 @@ export default function StudentBookTimes() {
                                                                                         </div>
                                                                                     </div>
                                                                                 );
-                                                                            }) : (
-                                                                                <div 
-                                                                                    className="group bg-white border-2 border-[#96aa97]/20 rounded-xl p-3 hover:border-[#96aa97] hover:shadow-md transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
-                                                                                    onClick={() => {
-                                                                                        // Auto-fill the custom time inputs with this slot
-                                                                                        const [start, end] = timeSlots.split('-');
-                                                                                        if (start && end) {
-                                                                                            setCustomStart(start);
-                                                                                            setCustomEnd(end);
-                                                                                        }
-                                                                                    }}
-                                                                                >
-                                                                                    <div className="flex items-center justify-between">
-                                                                                        <div className="flex items-center space-x-3">
-                                                                                            <div className="w-8 h-8 bg-gradient-to-br from-[#96aa97] to-[#86998a] rounded-lg flex items-center justify-center shadow-sm">
-                                                                                                <Clock className="w-4 h-4 text-white" />
-                                                                                            </div>
-                                                                                            <div>
-                                                                                                <span className="text-gray-900 font-semibold text-sm">{timeSlots}</span>
-                                                                                                <p className="text-gray-500 text-xs">Click to use this time</p>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        
-                                                                                    </div>
-                                                                                </div>
-                                                                            )}
+                                                                            })}
                                                                         </div>
                                                                     );
                                                                 })()}
