@@ -8,9 +8,7 @@ import React, { useState, useEffect } from "react";
 import { Session } from "@/app/types/session";
 import { useUser } from "@/app/contexts/userContext";
 import { getStudentPastDates, getStudentUpcomingDates } from "@/data/firestore/student";
-import { getTutorDataRef } from "@/data/firestore/tutor";
 import { filterSessionsByDate } from "@/data/firestore/session";
-import { Tutor } from "@/app/types/user";
 
 export default function StudentAllSessions() {
   const user = useUser();
@@ -59,12 +57,6 @@ export default function StudentAllSessions() {
 
     findPast();
   }, [selectedPastDate]);
-
-
-    
-  const formatToAmPm = (time24: string) =>
-    time24 ? dayjs(time24, "HH:mm").format("h:mm A") : "";
-
 
   const formatDate = (date: Dayjs) => {
     return date.format('YYYY-MM-DD');
@@ -124,7 +116,7 @@ export default function StudentAllSessions() {
                         return !isUpcomingDateAvailable(date);
                       }}
                       sx={{
-                        width: '%',
+                        width: '100%',
                         '& .MuiPickersDay-root': {
                           fontSize: '14px',
                           fontWeight: 500,
@@ -138,7 +130,7 @@ export default function StudentAllSessions() {
                           },
                         },
                         '& .MuiPickersDay-root.Mui-selected.Mui-focusVisible': {
-                          backgroundColor: 'transparent !important',
+                          backgroundColor: '#96aa97 !important',
                           color: 'white !important',
                         },
                         '& .MuiPickersDay-root.Mui-disabled': {
@@ -152,17 +144,39 @@ export default function StudentAllSessions() {
                           },
                         },
                         '& .MuiPickersDay-root.MuiDay-today': {
-                          border: 'none !important',
+                          border: '2px solid #96aa97 !important',
                           backgroundColor: 'transparent !important',
                           outline: 'none !important',
                           boxShadow: 'none !important',
                           color: '#2f2f2f !important',
-                          '&:before': { display: 'none !important' },
+                          position: 'relative',
+                          '&:before': { 
+                            content: '""',
+                            position: 'absolute',
+                            top: '-2px',
+                            right: '-2px',
+                            width: '8px',
+                            height: '8px',
+                            backgroundColor: '#96aa97',
+                            borderRadius: '50%',
+                            display: 'block !important'
+                          },
                           '&:after': { display: 'none !important' },
                         },
-                        '& .MuiPickersDay-today': {
-                          border: 'none !important',
-                          backgroundColor: 'transparent !important',
+                        '& .MuiPickersDay-root.MuiDay-today.Mui-selected': {
+                          backgroundColor: '#96aa97 !important',
+                          color: 'white !important',
+                          '&:before': { 
+                            content: '""',
+                            position: 'absolute',
+                            top: '-2px',
+                            right: '-2px',
+                            width: '8px',
+                            height: '8px',
+                            backgroundColor: 'white',
+                            borderRadius: '50%',
+                            display: 'block !important'
+                          },
                         },
                         '& .MuiPickersCalendarHeader-root': {
                           color: '#2f2f2f',

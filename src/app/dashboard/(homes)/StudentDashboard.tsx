@@ -122,58 +122,92 @@ export default function DashboardPage() {
                 {upcomingSessions.map((session) => (
                   <div
                     key={session.uid}
-                    className="bg-white rounded-lg border border-gray-200 shadow-sm flex items-center justify-between px-6 py-4"
+                    className="group bg-white rounded-2xl border-2 border-[#96aa97]/20 hover:border-[#96aa97] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
                   >
-                    {/* Left: Subject + Tutor */}
-                    <div className="flex items-center space-x-4">
-                      <div>
-                        <h3 className="text-base font-medium text-gray-900">
-                          {session.subject}
-                        </h3>
-                        <p className="text-sm text-gray-600">{session.tutor}</p>
+                    <div className="p-6">
+                      <div className="flex items-center justify-between">
+                        {/* Left side - Subject, Tutor, and Details */}
+                        <div className="flex items-center space-x-6">
+                          <div className="w-16 h-16 bg-gradient-to-br from-[#96aa97] to-[#86998a] rounded-xl flex items-center justify-center shadow-sm">
+                            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <div>
+                              <h3 className="text-xl font-bold text-[#2f2f2f]">
+                                {session.subject}
+                              </h3>
+                              <p className="text-gray-600">with {session.tutor}</p>
+                            </div>
+                            
+                            <div className="flex items-center space-x-4 text-sm text-gray-600">
+                              <div className="flex items-center space-x-2">
+                                <Clock className="w-4 h-4 text-[#96aa97]" />
+                                <span className="font-medium">{session.startTime} - {session.endTime}</span>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <svg className="w-4 h-4 text-[#96aa97]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span>{new Date(session.date).toLocaleDateString(undefined, {
+                                  weekday: "long",
+                                  month: "long",
+                                  day: "numeric",
+                                })}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Right side - Date Badge and Meeting Link */}
+                        <div className="flex items-center space-x-4">
+                          <div className="bg-[#96aa97] text-white text-sm font-semibold px-4 py-2 rounded-full">
+                            {new Date(session.date).toLocaleDateString(undefined, {
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </div>
+                          
+                          {session.meetURL ? (
+                            <a
+                              href={session.meetURL}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center space-x-2 bg-gradient-to-r from-[#96aa97] to-[#86998a] hover:from-[#86998a] hover:to-[#96aa97] text-white text-sm font-semibold px-6 py-3 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                              </svg>
+                              <span>Join Meeting</span>
+                            </a>
+                          ) : (
+                            <div className="flex items-center space-x-2 text-gray-500 text-sm bg-gray-100 px-4 py-3 rounded-xl">
+                              <Clock className="w-4 h-4" />
+                              <span>Link Pending</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-
-                    {/* Middle: Date + Time */}
-                    <div className="text-gray-700 text-sm">
-                      {new Date(session.date).toLocaleDateString(undefined, {
-                        month: "short",
-                        day: "numeric",
-                      })}{" "}
-                      · {session.startTime} - {session.endTime}
-                    </div>
-
-                    {/* Right: Meeting Link */}
-                    <div>
-                      {session.meetURL ? (
-                        <a
-                          href={session.meetURL}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-block bg-[#96aa97] hover:bg-[#86998a] text-white text-sm font-medium px-4 py-2 rounded-md transition"
-                        >
-                          Google Meet Link
-                        </a>
-                      ) : (
-                        <span className="text-sm text-gray-400 italic">
-                          Link not available yet
-                        </span>
-                      )}
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="bg-gray-100 rounded-xl p-10 text-center shadow-sm">
-                <div className="w-16 h-16 bg-gray-300 rounded-full mx-auto mb-5 flex items-center justify-center">
-                  <Plus className="w-8 h-8 text-gray-500" />
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-12 text-center shadow-sm border border-gray-200">
+                <div className="w-20 h-20 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full mx-auto mb-6 flex items-center justify-center shadow-sm">
+                  <Plus className="w-10 h-10 text-gray-500" />
                 </div>
-                <h3 className="text-gray-700 font-medium text-lg mb-1">
+                <h3 className="text-gray-700 font-semibold text-xl mb-2">
                   No Upcoming Sessions
                 </h3>
-                <p className="text-gray-500 text-sm">
-                  You haven’t scheduled any sessions for this week.
+                <p className="text-gray-500 text-sm mb-6">
+                  You haven't scheduled any sessions for this week.
                 </p>
+                <button className="bg-[#96aa97] hover:bg-[#86998a] text-white px-6 py-3 rounded-xl font-medium transition-colors shadow-sm">
+                  Book Your First Session
+                </button>
               </div>
             )}
           </section>
