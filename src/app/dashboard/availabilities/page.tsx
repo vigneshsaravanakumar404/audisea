@@ -3,11 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, CheckCircle, X, Settings } from 'lucide-react';
 import { useAuth } from '@/app/contexts/authContext';
 import { useUser } from '@/app/contexts/userContext';
-import { TutorSchema } from '@/data/schemas';
-import { FirebaseUtils } from '@/data/firebase/utils';
+import { Tutor } from '@/app/types/user';
 import { logToServer } from '@/utils/logger';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/firebase/firebase';
+import { getTutorData, updateTutorData } from '@/data/firestore/tutor';
 
 // Debug flag - set to true to enable detailed logging
 const DEBUG_MODE = false;
@@ -36,7 +36,7 @@ const AvailabilityScheduler = () => {
     const { currentUser } = useAuth();
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
-    const [tutorData, setTutorData] = useState<TutorSchema | null>(null);
+    const [tutorData, setTutorData] = useState<Tutor | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [timeRanges, setTimeRanges] = useState<string[]>([]);
@@ -68,28 +68,11 @@ const AvailabilityScheduler = () => {
 
             try {
                 setLoading(true);
-                const tutorData = await FirebaseUtils.getOrCreateTutor(
-                    currentUser.uid,
-                    currentUser.displayName || 'Unknown',
-                    currentUser.email || '',
-                    currentUser.photoURL || ''
-                );
-                setTutorData(tutorData);
+                const tutorData = await getTutorData(currentUser.uid);
+                setTutorData(tutorData as Tutor);
 
                 // Initialize time ranges based on Firebase data
-                initializeTimeRanges(tutorData);
-
-                // Log to server terminal
-                if (DEBUG_MODE) {
-                    await logToServer('=== FIREBASE TUTOR DATA ===');
-                    await logToServer(`Tutor UID: ${tutorData.uid}`);
-                    await logToServer(`Tutor Name: ${tutorData.name}`);
-                    await logToServer(`Tutor Email: ${tutorData.email}`);
-                    await logToServer(`Available Dates: ${JSON.stringify(tutorData.datesAvailable)}`);
-                    await logToServer(`Time Slots: ${JSON.stringify(tutorData.timeSlots)}`);
-                    await logToServer(`Subjects: ${JSON.stringify(tutorData.subjects)}`);
-                    await logToServer('==========================');
-                }
+                initializeTimeRanges(tutorData as Tutor);
 
             } catch (error) {
                 console.error('Error fetching/creating tutor data:', error);
@@ -102,20 +85,13 @@ const AvailabilityScheduler = () => {
     }, [currentUser?.uid]);
 
     // Initialize time ranges based on Firebase data for selected date
-    const initializeTimeRanges = async (data: TutorSchema) => {
+    const initializeTimeRanges = async (data: Tutor) => {
         const selectedDateStr = selectedDate.toISOString().split('T')[0];
         const timeSlotsForDate = data.timeSlots[selectedDateStr] || [];
 
         // Validate and clean time slots from database
         const validatedTimeSlots = await validateAndCleanTimeSlots(timeSlotsForDate);
         setTimeRanges(validatedTimeSlots);
-
-        if (DEBUG_MODE) {
-            await logToServer(`=== TIME RANGES FOR ${selectedDateStr} ===`);
-            await logToServer(`Time ranges from Firebase: ${JSON.stringify(timeSlotsForDate)}`);
-            await logToServer(`Validated time ranges: ${JSON.stringify(validatedTimeSlots)}`);
-            await logToServer('==============================');
-        }
     };
 
     // Validate and clean time slots from database
@@ -124,30 +100,13 @@ const AvailabilityScheduler = () => {
         const seenSlots = new Set<string>();
 
         for (const slot of timeSlots) {
-            // Check if slot format is valid (should be "HH:MM-HH:MM")
-            if (!/^\d{2}:\d{2}-\d{2}:\d{2}$/.test(slot)) {
-                if (DEBUG_MODE) {
-                    await logToServer(`Invalid time slot format: ${slot}`, 'warn');
-                }
-                continue;
-            }
 
             const [start, end] = slot.split('-');
 
-            // Basic validation
+            // Basic validation and checks for duplicates
             const validation = validateTimeSlot(start, end);
-            if (!validation.isValid) {
-                if (DEBUG_MODE) {
-                    await logToServer(`Invalid time slot from database: ${slot} - ${validation.errorMessage}`, 'warn');
-                }
-                continue;
-            }
+            if (!validation.isValid || seenSlots.has(slot)) {
 
-            // Check for duplicates within the loaded data
-            if (seenSlots.has(slot)) {
-                if (DEBUG_MODE) {
-                    await logToServer(`Duplicate time slot found in database: ${slot}`, 'warn');
-                }
                 continue;
             }
 
@@ -156,68 +115,6 @@ const AvailabilityScheduler = () => {
         }
 
         return validSlots;
-    };
-
-    // Parse dates from the database
-    const parseAvailableDates = () => {
-        if (!tutorData?.datesAvailable || !Array.isArray(tutorData.datesAvailable)) {
-            return [];
-        }
-
-        return tutorData.datesAvailable.map((dateStr: string) => {
-            const date = new Date(dateStr);
-            return {
-                date: date.getDate(),
-                month: date.getMonth() + 1,
-                year: date.getFullYear(),
-                fullDate: dateStr
-            };
-        });
-    };
-
-    // Get time slots for a specific date
-    const getTimeSlotsForDate = (dateStr: string) => {
-        if (!tutorData?.timeSlots || typeof tutorData.timeSlots !== 'object') {
-            return null;
-        }
-        return tutorData.timeSlots[dateStr];
-    };
-
-    // Navigate to previous month
-    const goToPreviousMonth = () => {
-        setCurrentMonth(prev => {
-            const newMonth = new Date(prev);
-            newMonth.setMonth(prev.getMonth() - 1);
-            return newMonth;
-        });
-    };
-
-    // Navigate to next month
-    const goToNextMonth = () => {
-        setCurrentMonth(prev => {
-            const newMonth = new Date(prev);
-            newMonth.setMonth(prev.getMonth() + 1);
-            return newMonth;
-        });
-    };
-
-    // Handle date selection
-    const handleDateSelect = async (day: number) => {
-        const newSelectedDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-        setSelectedDate(newSelectedDate);
-
-        // Update time ranges based on the new date
-        if (tutorData) {
-            const dateStr = newSelectedDate.toISOString().split('T')[0];
-            const timeSlotsForDate = tutorData.timeSlots[dateStr] || [];
-            setTimeRanges(timeSlotsForDate);
-
-            if (DEBUG_MODE) {
-                await logToServer(`=== DATE SELECTED: ${dateStr} ===`);
-                await logToServer(`Time ranges for this date: ${JSON.stringify(timeSlotsForDate)}`);
-                await logToServer('==============================');
-            }
-        }
     };
 
     // Validation function to check for duplicates and other validation rules
@@ -273,11 +170,57 @@ const AvailabilityScheduler = () => {
         };
     };
 
-    /**
-     * Merges overlapping or adjacent time slots
-     * @param {string[]} timeSlots - Array of time slots in "HH:MM-HH:MM" format
-     * @returns {string[]} - Array of merged time slots
-     */
+    // Parse dates from the database
+    const parseAvailableDates = () => {
+        if (!tutorData?.datesAvailable || !Array.isArray(tutorData.datesAvailable)) {
+            return [];
+        }
+
+        return tutorData.datesAvailable.map((dateStr: string) => {
+            const date = new Date(dateStr);
+            return {
+                date: date.getDate(),
+                month: date.getMonth() + 1,
+                year: date.getFullYear(),
+                fullDate: dateStr
+            };
+        });
+    };
+
+    const availableDates = parseAvailableDates();
+
+    // Navigate to previous month
+    const goToPreviousMonth = () => {
+        setCurrentMonth(prev => {
+            const newMonth = new Date(prev);
+            newMonth.setMonth(prev.getMonth() - 1);
+            return newMonth;
+        });
+    };
+
+    // Navigate to next month
+    const goToNextMonth = () => {
+        setCurrentMonth(prev => {
+            const newMonth = new Date(prev);
+            newMonth.setMonth(prev.getMonth() + 1);
+            return newMonth;
+        });
+    };
+
+    // Handle date selection
+    const handleDateSelect = async (day: number) => {
+        const newSelectedDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+        setSelectedDate(newSelectedDate);
+
+        // Update time ranges based on the new date
+        if (tutorData) {
+            const dateStr = newSelectedDate.toISOString().split('T')[0];
+            const timeSlotsForDate = tutorData.timeSlots[dateStr] || [];
+            setTimeRanges(timeSlotsForDate as string[]);
+        }
+    };
+
+
     const mergeTimeSlots = (timeSlots: string[]): string[] => {
         // Handle edge cases
         if (!timeSlots || timeSlots.length === 0) {
@@ -342,53 +285,6 @@ const AvailabilityScheduler = () => {
         );
     };
 
-    // Function to automatically merge overlapping time slots
-    const autoMergeTimeSlots = async () => {
-        if (timeRanges.length <= 1) {
-            if (DEBUG_MODE) {
-                await logToServer('No overlapping slots to merge');
-            }
-            return;
-        }
-
-        const originalSlots = [...timeRanges];
-        const mergedSlots = mergeTimeSlots(timeRanges);
-
-        if (mergedSlots.length < originalSlots.length) {
-            setTimeRanges(mergedSlots);
-
-            if (DEBUG_MODE) {
-                await logToServer(`=== AUTO-MERGED TIME SLOTS ===`);
-                await logToServer(`Original slots: ${JSON.stringify(originalSlots)}`);
-                await logToServer(`Merged slots: ${JSON.stringify(mergedSlots)}`);
-                await logToServer(`Reduced from ${originalSlots.length} to ${mergedSlots.length} slots`);
-                await logToServer(`=====================================`);
-            }
-        } else {
-            if (DEBUG_MODE) {
-                await logToServer('No overlapping slots found to merge');
-            }
-        }
-    };
-
-    // Function to check if there are overlapping time slots
-    const hasOverlappingSlots = (): boolean => {
-        if (timeRanges.length <= 1) return false;
-
-        const mergedSlots = mergeTimeSlots(timeRanges);
-        return mergedSlots.length < timeRanges.length;
-    };
-
-    // Function to get merge suggestions
-    const getMergeSuggestions = (): string[] => {
-        if (timeRanges.length <= 1) return [];
-
-        const mergedSlots = mergeTimeSlots(timeRanges);
-        if (mergedSlots.length >= timeRanges.length) return [];
-
-        return mergedSlots;
-    };
-
     // Computed merged time slots for display
     const mergedTimeSlots = timeRanges.length > 1 ? mergeTimeSlots(timeRanges) : timeRanges;
     const hasOverlaps = timeRanges.length > 1 && mergedTimeSlots.length < timeRanges.length;
@@ -399,13 +295,6 @@ const AvailabilityScheduler = () => {
         const validation = validateTimeSlot(newTimeRange.start, newTimeRange.end);
 
         if (!validation.isValid) {
-            // Show error message using toast
-            if (DEBUG_MODE) {
-                await logToServer(`=== VALIDATION ERROR ===`);
-                await logToServer(`Error: ${validation.errorMessage}`);
-                await logToServer(`Start: ${newTimeRange.start}, End: ${newTimeRange.end}`);
-                await logToServer(`=====================`);
-            }
 
             // Show toast notification instead of alert
             showToast(validation.errorMessage, 'error');
@@ -418,56 +307,27 @@ const AvailabilityScheduler = () => {
 
         // Reset the form
         setNewTimeRange({ start: '09:00', end: '10:00' });
-
-        if (DEBUG_MODE) {
-            await logToServer(`=== ADD TIME RANGE ===`);
-            await logToServer(`New time range: ${timeRangeStr}`);
-            await logToServer(`All time ranges: ${JSON.stringify(updatedRanges)}`);
-            await logToServer(`=====================`);
-        }
     };
 
     // Remove time range
     const removeTimeRange = async (index: number) => {
         const updatedRanges = timeRanges.filter((_, i) => i !== index);
         setTimeRanges(updatedRanges);
-
-        if (DEBUG_MODE) {
-            await logToServer(`=== REMOVE TIME RANGE ===`);
-            await logToServer(`Removed index: ${index}`);
-            await logToServer(`Remaining ranges: ${JSON.stringify(updatedRanges)}`);
-            await logToServer(`========================`);
-        }
     };
 
     // Clear all time ranges for selected date
     const clearAllTimeRanges = async () => {
         setTimeRanges([]);
-        if (DEBUG_MODE) {
-            await logToServer('=== CLEAR ALL TIME RANGES ===');
-            await logToServer('All time ranges cleared for selected date');
-            await logToServer('=====================================');
-        }
-
-        // Note: The date will be removed from datesAvailable when saved
-        // This ensures consistency between timeSlots and datesAvailable
     };
 
     // Save availability to Firebase
     const saveAvailability = async () => {
         if (!tutorData || !currentUser?.uid) {
-            await logToServer('ERROR: Cannot save - missing tutor data or user UID', 'error');
             return;
         }
 
         try {
             setSaving(true);
-            if (DEBUG_MODE) {
-                await logToServer('=== SAVING AVAILABILITY ===');
-                await logToServer(`Selected date: ${selectedDate.toISOString().split('T')[0]}`);
-                await logToServer(`Time ranges to save: ${JSON.stringify(timeRanges)}`);
-                await logToServer(`Action: ${timeRanges.length > 0 ? 'Adding/Updating' : 'Clearing'} availability for this date`);
-            }
 
             // Auto-merge overlapping time slots before saving
             let finalTimeRanges = [...timeRanges];
@@ -475,21 +335,11 @@ const AvailabilityScheduler = () => {
                 const mergedSlots = mergeTimeSlots(timeRanges);
                 if (mergedSlots.length < timeRanges.length) {
                     finalTimeRanges = mergedSlots;
-                    if (DEBUG_MODE) {
-                        await logToServer(`=== AUTO-MERGED BEFORE SAVE ===`);
-                        await logToServer(`Original slots: ${JSON.stringify(timeRanges)}`);
-                        await logToServer(`Merged slots: ${JSON.stringify(mergedSlots)}`);
-                        await logToServer(`Reduced from ${timeRanges.length} to ${mergedSlots.length} slots`);
-                        await logToServer(`=====================================`);
-                    }
                 }
             }
 
             // Get the selected date string
             const selectedDateStr = selectedDate.toISOString().split('T')[0];
-
-            // Update the tutor document in Firebase
-            const tutorDocRef = doc(db, 'tutors', currentUser.uid);
 
             // Prepare the updated data
             let updatedTimeSlots = { ...tutorData.timeSlots };
@@ -518,11 +368,8 @@ const AvailabilityScheduler = () => {
                 }
             }
 
-            // Update the document
-            await updateDoc(tutorDocRef, {
-                timeSlots: updatedTimeSlots,
-                datesAvailable: updatedDatesAvailable
-            });
+            // Update tutor data in Firebase
+            await updateDoc(doc(db, 'tutors', currentUser.uid), { timeSlots: updatedTimeSlots, datesAvailable: updatedDatesAvailable });
 
             // Update local state with merged slots
             setTimeRanges(finalTimeRanges);
@@ -532,13 +379,6 @@ const AvailabilityScheduler = () => {
                 datesAvailable: updatedDatesAvailable
             });
 
-            if (DEBUG_MODE) {
-                await logToServer('=== AVAILABILITY SAVED SUCCESSFULLY ===');
-                await logToServer(`Updated timeSlots: ${JSON.stringify(updatedTimeSlots)}`);
-                await logToServer(`Updated datesAvailable: ${JSON.stringify(updatedDatesAvailable)}`);
-                await logToServer('==========================================');
-            }
-
             // Show success message using toast
             const successMessage = timeRanges.length > 0 && hasOverlaps
                 ? 'Availability saved successfully! Overlapping time slots were automatically merged.'
@@ -546,9 +386,6 @@ const AvailabilityScheduler = () => {
             showToast(successMessage, 'success');
 
         } catch (error) {
-            if (DEBUG_MODE) {
-                await logToServer(`ERROR saving availability: ${error}`, 'error');
-            }
             console.error('Error saving availability:', error);
             showToast('Error saving availability. Please try again.', 'error');
         } finally {
@@ -576,8 +413,6 @@ const AvailabilityScheduler = () => {
 
         return days;
     };
-
-    const availableDates = parseAvailableDates();
 
     if (loading) {
         return (

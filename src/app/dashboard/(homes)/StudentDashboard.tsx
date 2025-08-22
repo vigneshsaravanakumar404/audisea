@@ -1,8 +1,6 @@
 "use client";
 import React from "react";
 import {Plus, Clock, User} from "lucide-react";
-import { getUserData, setUserData } from "@/data/firestore/user";
-import { useAuth } from "@/app/contexts/authContext";
 import { useEffect, useState } from "react";
 import { UserInfo } from "@/app/types/user";
 import { useUser } from "@/app/contexts/userContext";
