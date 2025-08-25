@@ -59,6 +59,24 @@ const AvailabilityScheduler = () => {
         return options;
     };
 
+    // Helper function to convert 24-hour format to AM/PM format
+    const formatTimeToAMPM = (timeStr: string): string => {
+        if (!timeStr || !timeStr.includes(':')) return timeStr;
+
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        const hour = hours % 12 || 12;
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        return `${hour}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+    };
+
+    // Helper function to format time range display (e.g., "09:00-10:00" to "9:00 AM - 10:00 AM")
+    const formatTimeRangeDisplay = (timeRange: string): string => {
+        if (!timeRange || !timeRange.includes('-')) return timeRange;
+
+        const [start, end] = timeRange.split('-');
+        return `${formatTimeToAMPM(start)} - ${formatTimeToAMPM(end)}`;
+    };
+
     const timeOptions = generateTimeOptions();
 
     // Fetch tutor data from Firestore
@@ -753,7 +771,9 @@ const AvailabilityScheduler = () => {
                                                         className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#96aa97] focus:border-[#96aa97] bg-white text-gray-900"
                                                     >
                                                         {timeOptions.map(time => (
-                                                            <option key={time} value={time} className="text-gray-900 bg-white">{time}</option>
+                                                            <option key={time} value={time} className="text-gray-900 bg-white">
+                                                                {formatTimeToAMPM(time)}
+                                                            </option>
                                                         ))}
                                                     </select>
                                                 </div>
@@ -765,10 +785,18 @@ const AvailabilityScheduler = () => {
                                                         className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#96aa97] focus:border-[#96aa97] bg-white text-gray-900"
                                                     >
                                                         {timeOptions.map(time => (
-                                                            <option key={time} value={time} className="text-gray-900 bg-white">{time}</option>
+                                                            <option key={time} value={time} className="text-gray-900 bg-white">
+                                                                {formatTimeToAMPM(time)}
+                                                            </option>
                                                         ))}
                                                     </select>
                                                 </div>
+                                            </div>
+                                            {/* Display selected time range in AM/PM format */}
+                                            <div className="text-center mb-3">
+                                                <span className="text-sm text-gray-600">
+                                                    Selected: {formatTimeToAMPM(newTimeRange.start)} - {formatTimeToAMPM(newTimeRange.end)}
+                                                </span>
                                             </div>
                                             <button
                                                 onClick={addTimeRange}
@@ -807,7 +835,7 @@ const AvailabilityScheduler = () => {
                                                             <div className="flex items-center space-x-3">
                                                                 <Clock className="w-4 h-4 text-gray-500" />
                                                                 <span className="text-sm font-medium text-gray-700">
-                                                                    {range}
+                                                                    {formatTimeRangeDisplay(range)}
                                                                 </span>
                                                             </div>
                                                             <button
@@ -840,7 +868,7 @@ const AvailabilityScheduler = () => {
                                                             <div className="flex items-center space-x-3">
                                                                 <Clock className="w-4 h-4 text-green-600" />
                                                                 <span className="text-sm font-medium text-green-800">
-                                                                    {range}
+                                                                    {formatTimeRangeDisplay(range)}
                                                                 </span>
                                                             </div>
                                                         </div>
