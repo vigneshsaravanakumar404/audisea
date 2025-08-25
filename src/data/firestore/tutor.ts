@@ -16,3 +16,8 @@ export async function getTutorData(uid: string) {
 export function getTutorDataRef(uid: string) {
   return doc(db, "tutors", uid);
 }
+
+export function updateTutorData(uid: string, data: any) {
+  const userRef = doc(db, "tutors", uid);
+  return setDoc(userRef, data);
+}
